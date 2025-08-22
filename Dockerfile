@@ -18,10 +18,8 @@ RUN apk add --no-cache \
     freetype-dev \
     libxml2-dev && \
     docker-php-ext-configure gd --with-freetype=/usr/include --with-jpeg=/usr/include && \
-    docker-php-ext-install gd pdo_mysql zip exif pcntl bcmath xml opcache
-
-# Instalar PCOV via PECL
-RUN pecl install pcov && docker-php-ext-enable pcov
+    docker-php-ext-install gd pdo_mysql zip exif pcntl bcmath xml opcache && \
+    pecl install pcov && docker-php-ext-enable pcov
 
 # Definir diretório de trabalho
 WORKDIR /app
