@@ -16,9 +16,9 @@ RUN apk add --no-cache \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
-    libxml2-dev
-RUN docker-php-ext-configure gd --with-freetype=/usr/include --with-jpeg=/usr/include
-RUN docker-php-ext-install gd pdo_mysql zip exif pcntl bcmath xml opcache
+    libxml2-dev && \
+    docker-php-ext-configure gd --with-freetype=/usr/include --with-jpeg=/usr/include && \
+    docker-php-ext-install gd pdo_mysql zip exif pcntl bcmath xml opcache
 
 # Instalar PCOV via PECL
 RUN pecl install pcov && docker-php-ext-enable pcov
