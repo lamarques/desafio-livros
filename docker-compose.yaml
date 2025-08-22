@@ -1,0 +1,46 @@
+services:
+  web:
+    image: nginx:latest
+    container_name: desafio.web
+    ports:
+      - "8000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - .:/app
+    networks:
+      - bubble
+    depends_on:
+      - app
+  app:
+    build: .
+    container_name: desafio.app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    networks:
+      - bubble
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql
+    container_name: desafio.mysql
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - bubble
+
+networks:
+  bubble:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
