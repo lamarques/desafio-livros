@@ -33,21 +33,55 @@ class LivroRepository implements LivroRepositoryInterface
 
     public function saveLivro(LivrosSaveDto $livroData): bool
     {
-        // TODO: Implement saveLivro() method.
+        $livro = new LivroModel();
+        $livro->Titulo = $livroData->titulo;
+        $livro->Editora = $livroData->editora;
+        $livro->Edicao = $livroData->edicao;
+        $livro->AnoPublicacao = $livroData->anoPublicacao;
+
+        return $livro->save();
     }
 
     public function updateLivro(LivroRequestDto $codl, LivrosSaveDto $livroData): bool
     {
-        // TODO: Implement updateLivro() method.
+        $livro = $this->livroModel->find($codl->Codl);
+        if (!$livro) {
+            return false; // Livro não encontrado
+        }
+
+        $livro->Titulo = $livroData->titulo;
+        $livro->Editora = $livroData->editora;
+        $livro->Edicao = $livroData->edicao;
+        $livro->AnoPublicacao = $livroData->anoPublicacao;
+
+        return $livro->save();
     }
 
-    public function deleteLivro(LivroResponseDto $codl): bool
+    public function deleteLivro(LivroResponseDto $livroResponseDto): bool
     {
-        // TODO: Implement deleteLivro() method.
+        $livro = $this->livroModel->find($livroResponseDto->Codl);
+        if (!$livro) {
+            return false;
+        }
+
+        return (bool) $livro->delete();
     }
 
     public function listLivros(): array
     {
-        // TODO: Implement listLivros() method.
+        $livros = $this->livroModel->all();
+        $result = [];
+
+        foreach ($livros as $livro) {
+            $result[] = new LivroResponseDto(
+                $livro->Codl,
+                $livro->Titulo,
+                $livro->Editora,
+                $livro->Edicao,
+                $livro->AnoPublicacao
+            );
+        }
+
+        return $result;
     }
 }
