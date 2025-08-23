@@ -31,9 +31,6 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
 
-      - name: Prepare environment
-        run: php artisan key:generate
-
       - name: Run tests with coverage
         run: php artisan test --coverage --min=0
 
