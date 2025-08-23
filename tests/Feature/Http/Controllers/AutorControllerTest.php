@@ -3,9 +3,9 @@
 namespace Tests\Feature\Http\Controllers;
 
 use App\Http\Middleware\VerifyCsrfToken;
-use Tests\TestCase;
 use App\Models\Autor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class AutorControllerTest extends TestCase
 {
