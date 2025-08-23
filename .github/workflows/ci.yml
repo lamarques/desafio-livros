@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+  push:
+    branches: [ main ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, curl, dom, json, pdo_sqlite, sqlite3
+          coverage: xdebug
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Prepare environment
+        run: |
+          php -r "file_exists('database') || mkdir('database');"
+          php -r "file_exists('database/testing.sqlite') || fopen('database/testing.sqlite', 'w');"
+          php artisan key:generate
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run tests with coverage
+        run: php artisan test --coverage --min=0
+
+      - name: Upload coverage report (clover.xml)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-clover
+          path: storage/coverage/coverage.xml
+          if-no-files-found: ignore
+
+      - name: Upload junit report (opcional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit
+          path: storage/test-results/junit.xml
+          if-no-files-found: ignore
