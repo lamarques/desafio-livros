@@ -2,13 +2,16 @@
 
 namespace Database\Factories;
 
+use App\Models\Autor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Autor>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<Autor>
  */
 class AutorFactory extends Factory
 {
+
+    protected $model = Autor::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +20,7 @@ class AutorFactory extends Factory
     public function definition(): array
     {
         return [
-            'Nome' => fake()->name()->substr(0, 40),
+            'Nome' => $this->faker->name(),
         ];
     }
 }
