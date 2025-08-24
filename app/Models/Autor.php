@@ -21,4 +21,14 @@ class Autor extends Model
     protected $casts = [
         'CodAu' => 'integer',
     ];
+
+    public function livros()
+    {
+        return $this->belongsToMany(
+            Livro::class,
+            'Livro_Autor',
+            'Autor_CodAu',
+            'Livro_Codl'
+        );
+    }
 }

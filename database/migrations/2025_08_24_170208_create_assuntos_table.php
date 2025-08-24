@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('Livro', function (Blueprint $table) {
-            $table->integer('Codl', true);
-            $table->string('Titulo', 100);
-            $table->string('Editora', 50);
-            $table->integer('Edicao');
-            $table->string('AnoPublicacao', 4);
+        Schema::create('Assunto', function (Blueprint $table) {
+            $table->integer('CodAs', true);
+            $table->string('Descricao', 20);
         });
     }
 
@@ -25,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('livros');
+        Schema::dropIfExists('assuntos');
     }
 };

@@ -20,6 +20,29 @@ class Livro extends Model
         'Edicao',
         'AnoPublicacao',
     ];
+    protected $casts = [
+        'Codl' => 'integer',
+    ];
+
+    public function autores()
+    {
+        return $this->belongsToMany(
+            Autor::class,
+            'Livro_Autor',
+            'Livro_Codl',
+            'Autor_CodAu'
+        );
+    }
+
+    public function assuntos()
+    {
+        return $this->belongsToMany(
+            Assunto::class,
+            'Livro_Assuntos',
+            'Livro_Codl',
+            'Assunto_CodAs'
+        );
+    }
 
 
 }
