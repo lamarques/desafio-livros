@@ -5,6 +5,7 @@ namespace Livros\Infrastructure\Repository;
 use App\Livros\Application\Domain\Entity\Assunto as AssuntoEntity;
 use App\Livros\Infrastructure\Repository\AssuntoRepository;
 use App\Models\Assunto as AssuntoModel;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,31 +21,28 @@ class AssuntoRepositoryTest extends TestCase
         $this->repo = new AssuntoRepository(new AssuntoModel());
     }
 
-    /** Helper: nome da tabela */
     private function assuntoTable(): string
     {
         return (new AssuntoModel())->getTable();
     }
 
-    /** Helper: cria e persiste um AssuntoModel */
-    private function criarAssunto(string $descricao = 'Tecnologia'): AssuntoModel
+    private function criarAssunto(string $descricao = 'Algoritmos'): AssuntoModel
     {
-        $assunto = new AssuntoModel();
-        $assunto->Descricao = $descricao;
-        $assunto->save();
-
-        return $assunto;
+        // descrição ≤ 20 chars
+        $m = new AssuntoModel();
+        $m->Descricao = $descricao;
+        $m->save();
+        return $m;
     }
 
     public function testGetAssuntoRetornaEntidadeQuandoEncontrado(): void
     {
-        $salvo = $this->criarAssunto('Ciência');
+        $salvo = $this->criarAssunto('Ciencia da Comp.'); // 17 chars
+        $entidade = $this->repo->getAssunto($salvo->CodAs);
 
-        $entity = $this->repo->getAssunto($salvo->CodAs);
-
-        $this->assertInstanceOf(AssuntoEntity::class, $entity);
-        $this->assertSame($salvo->CodAs, $entity->getCodAs());
-        $this->assertSame('Ciência', $entity->getDescricao());
+        $this->assertInstanceOf(AssuntoEntity::class, $entidade);
+        $this->assertSame($salvo->CodAs, $entidade->getCodAs());
+        $this->assertSame('Ciencia da Comp.', $entidade->getDescricao());
     }
 
     public function testGetAssuntoRetornaNullQuandoNaoEncontrado(): void
@@ -52,48 +50,65 @@ class AssuntoRepositoryTest extends TestCase
         $this->assertNull($this->repo->getAssunto(999999));
     }
 
-    public function testSaveAssuntoPersisteERetornaTrue(): void
+    public function testSaveAssuntoPersisteRetornaTrueEAtualizaLastInsertedId(): void
     {
-        $ok = $this->repo->saveAssunto('Matemática');
+        $ok = $this->repo->saveAssunto('Estruturas de Dados'); // 20 chars exatos
         $this->assertTrue($ok);
 
         $this->assertDatabaseHas($this->assuntoTable(), [
-            'Descricao' => 'Matemática',
+            'Descricao' => 'Estruturas de Dados',
         ]);
+
+        // Recupera o registro para validar ID
+        $registro = AssuntoModel::where('Descricao', 'Estruturas de Dados')->firstOrFail();
+        $this->assertSame($registro->CodAs, $this->repo->getLastInsertedId());
     }
 
-    public function testUpdateAssuntoRetornaFalseSeNaoEncontrado(): void
+    public function testGetLastInsertedIdAntesDeSalvarRetornaNull(): void
     {
-        $this->assertFalse($this->repo->updateAssunto(123456, 'Nova Desc'));
+        $this->assertNull($this->repo->getLastInsertedId());
+    }
+
+    public function testSaveAssuntoExcedeLimiteDeCaracteresLancaQueryException(): void
+    {
+        $this->expectException(QueryException::class);
+        $this->repo->saveAssunto(str_repeat('A', 21)); // > 20
     }
 
     public function testUpdateAssuntoAtualizaERetornaTrue(): void
     {
-        $salvo = $this->criarAssunto('Antiga Desc');
-
-        $ok = $this->repo->updateAssunto($salvo->CodAs, 'Nova Desc');
+        $salvo = $this->criarAssunto('Antigo');
+        $ok = $this->repo->updateAssunto($salvo->CodAs, 'Novo');
         $this->assertTrue($ok);
 
         $this->assertDatabaseHas($this->assuntoTable(), [
-            'CodAs' => $salvo->CodAs,
-            'Descricao' => 'Nova Desc',
+            'CodAs'     => $salvo->CodAs,
+            'Descricao' => 'Novo',
+        ]);
+        $this->assertDatabaseMissing($this->assuntoTable(), [
+            'CodAs'     => $salvo->CodAs,
+            'Descricao' => 'Antigo',
         ]);
     }
 
-    public function testDeleteAssuntoRetornaFalseSeNaoEncontrado(): void
+    public function testUpdateAssuntoRetornaFalseQuandoNaoEncontrado(): void
     {
-        $this->assertFalse($this->repo->deleteAssunto(987654));
+        $this->assertFalse($this->repo->updateAssunto(123456, 'Qualquer'));
     }
 
     public function testDeleteAssuntoRemoveERetornaTrue(): void
     {
-        $salvo = $this->criarAssunto('Para Remover');
-
+        $salvo = $this->criarAssunto('Para Deletar');
         $ok = $this->repo->deleteAssunto($salvo->CodAs);
         $this->assertTrue($ok);
 
         $this->assertDatabaseMissing($this->assuntoTable(), [
             'CodAs' => $salvo->CodAs,
         ]);
+    }
+
+    public function testDeleteAssuntoRetornaFalseQuandoNaoEncontrado(): void
+    {
+        $this->assertFalse($this->repo->deleteAssunto(999999));
     }
 }

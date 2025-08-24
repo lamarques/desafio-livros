@@ -33,11 +33,9 @@ class AssuntoRepository implements AssuntoRepositoryInterface
     {
         $assunto = new AssuntoModel();
         $assunto->Descricao = $descricao;
-        if ($assunto->save()) {
-            $this->lastInsertedId = $assunto->CodAs;
-            return true;
-        }
-        return false;
+        $assunto->save();
+        $this->lastInsertedId = $assunto->CodAs;
+        return true;
     }
 
     #[\Override] public function updateAssunto(int $codAs, string $descricao): bool
@@ -65,6 +63,6 @@ class AssuntoRepository implements AssuntoRepositoryInterface
 
     #[\Override] public function getLastInsertedId()
     {
-        // TODO: Implement getLastInsertedId() method.
+        return $this->lastInsertedId ?? null;
     }
 }
