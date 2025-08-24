@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @codeCoverageIgnore
+ */
 class LivroAutor extends Model
 {
     protected $table = 'Livro_Autor';
