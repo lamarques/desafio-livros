@@ -9,6 +9,8 @@ use App\Models\Assunto as AssuntoModel;
 class AssuntoRepository implements AssuntoRepositoryInterface
 {
 
+    private int $lastInsertedId;
+
     public function __construct(private readonly AssuntoModel $assuntoModel)
     {
     }
@@ -31,8 +33,11 @@ class AssuntoRepository implements AssuntoRepositoryInterface
     {
         $assunto = new AssuntoModel();
         $assunto->Descricao = $descricao;
-
-        return $assunto->save();
+        if ($assunto->save()) {
+            $this->lastInsertedId = $assunto->CodAs;
+            return true;
+        }
+        return false;
     }
 
     #[\Override] public function updateAssunto(int $codAs, string $descricao): bool
@@ -56,5 +61,10 @@ class AssuntoRepository implements AssuntoRepositoryInterface
         }
 
         return $assuntoData->delete();
+    }
+
+    #[\Override] public function getLastInsertedId()
+    {
+        // TODO: Implement getLastInsertedId() method.
     }
 }

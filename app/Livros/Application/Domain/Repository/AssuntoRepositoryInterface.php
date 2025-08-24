@@ -15,4 +15,6 @@ interface AssuntoRepositoryInterface
 
     public function deleteAssunto(int $codAs): bool;
 
+    public function getLastInsertedId();
+
 }
