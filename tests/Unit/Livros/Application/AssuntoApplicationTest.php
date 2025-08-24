@@ -48,4 +48,60 @@ class AssuntoApplicationTest extends TestCase
 
         $app->create($request);
     }
+
+    public function testListRetornaArrayVazioQuandoServiceNaoTemAssuntos(): void
+    {
+        $service = $this->createMock(AssuntoService::class);
+        $service->expects($this->once())
+            ->method('list')
+            ->willReturn([]);
+
+        $app = new AssuntoApplication($service);
+
+        $resultado = $app->list();
+
+        $this->assertIsArray($resultado);
+        $this->assertCount(0, $resultado);
+    }
+
+    public function testListRetornaArrayDeResponseDtoComDados(): void
+    {
+        $service = $this->createMock(AssuntoService::class);
+
+        $dto1 = new AssuntoResponseDto(CodAs: 1, Descricao: 'Redes');
+        $dto2 = new AssuntoResponseDto(CodAs: 2, Descricao: 'Banco de Dados');
+
+        $service->expects($this->once())
+            ->method('list')
+            ->willReturn([$dto1, $dto2]);
+
+        $app = new AssuntoApplication($service);
+
+        $resultado = $app->list();
+
+        $this->assertIsArray($resultado);
+        $this->assertCount(2, $resultado);
+        $this->assertContainsOnlyInstancesOf(AssuntoResponseDto::class, $resultado);
+
+        $this->assertSame(1, $resultado[0]->CodAs);
+        $this->assertSame('Redes', $resultado[0]->Descricao);
+
+        $this->assertSame(2, $resultado[1]->CodAs);
+        $this->assertSame('Banco de Dados', $resultado[1]->Descricao);
+    }
+
+    public function testListPropagaExcecaoDoService(): void
+    {
+        $service = $this->createMock(AssuntoService::class);
+        $service->expects($this->once())
+            ->method('list')
+            ->willThrowException(new \RuntimeException('Falha ao listar'));
+
+        $app = new AssuntoApplication($service);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Falha ao listar');
+
+        $app->list();
+    }
 }

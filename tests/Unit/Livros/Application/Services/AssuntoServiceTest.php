@@ -2,6 +2,7 @@
 
 namespace Livros\Application\Services;
 
+use App\Livros\Application\Domain\Entity\Assunto;
 use App\Livros\Application\Services\AssuntoService;
 use App\Livros\Application\Domain\Repository\AssuntoRepositoryInterface;
 use App\Livros\Dtos\AssuntoRequestDto;
@@ -160,5 +161,61 @@ class AssuntoServiceTest extends TestCase
         $this->expectExceptionMessage('Erro ao salvar o assunto.');
 
         $service->create(new AssuntoRequestDto(Descricao: 'Falha'));
+    }
+
+    public function testListRetornaArrayVazioQuandoRepositorioNaoTemAssuntos(): void
+    {
+        $repo = $this->createMock(AssuntoRepositoryInterface::class);
+        $repo->expects($this->once())
+            ->method('getAllAssuntos')
+            ->willReturn([]);
+
+        $service = new AssuntoService($repo);
+
+        $result = $service->list();
+
+        $this->assertIsArray($result);
+        $this->assertCount(0, $result);
+    }
+
+    public function testListRetornaArrayDeResponseDtoComDadosMapeados(): void
+    {
+        $repo = $this->createMock(AssuntoRepositoryInterface::class);
+
+        $ent1 = new Assunto(CodAs: 1, Descricao: 'Redes');
+        $ent2 = new Assunto(CodAs: 2, Descricao: 'Banco de Dados');
+
+        $repo->expects($this->once())
+            ->method('getAllAssuntos')
+            ->willReturn([$ent1, $ent2]);
+
+        $service = new AssuntoService($repo);
+
+        $result = $service->list();
+
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+        $this->assertContainsOnlyInstancesOf(AssuntoResponseDto::class, $result);
+
+        $this->assertSame(1, $result[0]->CodAs);
+        $this->assertSame('Redes', $result[0]->Descricao);
+
+        $this->assertSame(2, $result[1]->CodAs);
+        $this->assertSame('Banco de Dados', $result[1]->Descricao);
+    }
+
+    public function testListNaoChamaOutrosMetodosDoRepositorio(): void
+    {
+        $repo = $this->createMock(AssuntoRepositoryInterface::class);
+
+        $repo->expects($this->once())
+            ->method('getAllAssuntos')
+            ->willReturn([]);
+
+        $service = new AssuntoService($repo);
+
+        $result = $service->list();
+
+        $this->assertSame([], $result);
     }
 }

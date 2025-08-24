@@ -17,4 +17,9 @@ class AssuntoApplication
         return $this->assuntoService->create($assuntoDto);
     }
 
+    public function list(): array
+    {
+        return $this->assuntoService->list();
+    }
+
 }

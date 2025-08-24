@@ -17,4 +17,6 @@ interface AssuntoRepositoryInterface
 
     public function getLastInsertedId();
 
+    public function getAllAssuntos(): array;
+
 }

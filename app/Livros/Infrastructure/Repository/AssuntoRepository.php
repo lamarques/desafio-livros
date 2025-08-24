@@ -65,4 +65,15 @@ class AssuntoRepository implements AssuntoRepositoryInterface
     {
         return $this->lastInsertedId ?? null;
     }
+
+    #[\Override] public function getAllAssuntos(): array
+    {
+        $assuntos = $this->assuntoModel->all();
+        return $assuntos->map(function ($assunto) {
+            return new Assunto(
+                CodAs: $assunto->CodAs,
+                Descricao: $assunto->Descricao
+            );
+        })->toArray();
+    }
 }

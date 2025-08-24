@@ -111,4 +111,37 @@ class AssuntoRepositoryTest extends TestCase
     {
         $this->assertFalse($this->repo->deleteAssunto(999999));
     }
+
+    public function testGetAllAssuntosRetornaArrayVazioQuandoNaoHaRegistros(): void
+    {
+        $resultado = $this->repo->getAllAssuntos();
+
+        $this->assertIsArray($resultado);
+        $this->assertCount(0, $resultado);
+    }
+
+    public function testGetAllAssuntosRetornaArrayDeEntidadesComDadosMapeados(): void
+    {
+        $a = $this->criarAssunto('Redes');           // <= 5 chars
+        $b = $this->criarAssunto('Banco de Dados');  // <= 14 chars
+
+        $resultado = $this->repo->getAllAssuntos();
+
+        $this->assertIsArray($resultado);
+        $this->assertCount(2, $resultado);
+        $this->assertContainsOnlyInstancesOf(AssuntoEntity::class, $resultado);
+
+        $map = [];
+        foreach ($resultado as $ent) {
+            $map[$ent->getCodAs()] = $ent;
+        }
+
+        $this->assertArrayHasKey($a->CodAs, $map);
+        $this->assertSame($a->CodAs, $map[$a->CodAs]->getCodAs());
+        $this->assertSame('Redes', $map[$a->CodAs]->getDescricao());
+
+        $this->assertArrayHasKey($b->CodAs, $map);
+        $this->assertSame($b->CodAs, $map[$b->CodAs]->getCodAs());
+        $this->assertSame('Banco de Dados', $map[$b->CodAs]->getDescricao());
+    }
 }

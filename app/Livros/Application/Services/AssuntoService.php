@@ -80,4 +80,20 @@ class AssuntoService
             ['descricao' => $descricao]
         );
     }
+
+    public function list(): array
+    {
+        $assuntos = $this->assuntoRepository->getAllAssuntos();
+
+        if (empty($assuntos)) {
+            return [];
+        }
+
+        return array_map(function ($assunto) {
+            return new AssuntoResponseDto(
+                CodAs: $assunto->getCodAs(),
+                Descricao: $assunto->getDescricao()
+            );
+        }, $assuntos);
+    }
 }

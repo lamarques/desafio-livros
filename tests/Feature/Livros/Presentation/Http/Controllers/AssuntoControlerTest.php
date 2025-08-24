@@ -75,4 +75,42 @@ class AssuntoControlerTest extends TestCase
                 'errors' => ['Descricao'],
             ]);
     }
+
+    public function testListRetorna200ComArrayDeAssuntos(): void
+    {
+        $mock = $this->createMock(AssuntoApplication::class);
+        $this->instance(AssuntoApplication::class, $mock);
+
+        $mock->expects($this->once())
+            ->method('list')
+            ->willReturn([
+                new AssuntoResponseDto(CodAs: 1, Descricao: 'Redes'),
+                new AssuntoResponseDto(CodAs: 2, Descricao: 'Banco de Dados'),
+            ]);
+
+        // se você nomeou a rota, pode usar: route('api.assunto.list')
+        $resp = $this->getJson('/api/assunto');
+
+        $resp->assertOk()
+            ->assertJsonPath('data.0.CodAs', 1)
+            ->assertJsonPath('data.0.Descricao', 'Redes')
+            ->assertJsonPath('data.1.CodAs', 2)
+            ->assertJsonPath('data.1.Descricao', 'Banco de Dados')
+            ->assertJsonCount(2, 'data');
+    }
+
+    public function testListRetorna200ComArrayVazioQuandoNaoHaAssuntos(): void
+    {
+        $mock = $this->createMock(AssuntoApplication::class);
+        $this->instance(AssuntoApplication::class, $mock);
+
+        $mock->expects($this->once())
+            ->method('list')
+            ->willReturn([]);
+
+        $resp = $this->getJson('/api/assunto');
+
+        $resp->assertOk()
+            ->assertExactJson(['data' => []]);
+    }
 }
