@@ -80,4 +80,13 @@ class AssuntoControler extends Controller
         );
     }
 
+    public function delete(int $id): JsonResponse
+    {
+        if ($this->assuntoApplication->delete($id)) {
+            return response()->json(['message' => 'Assunto removido com sucesso.']);
+        }
+
+        return response()->json(['message' => 'Erro ao remover o assunto ou assunto não encontrado.'], 404);
+    }
+
 }

@@ -12,4 +12,6 @@ Route::group(['prefix' => 'assunto'], function () {
         ->name('api.assunto.show');
     Route::put('/{id}', [AssuntoControler::class, 'update'])
         ->name('api.assunto.update');
+    Route::delete('/{id}', [AssuntoControler::class, 'delete'])
+        ->name('api.assunto.delete');
 });

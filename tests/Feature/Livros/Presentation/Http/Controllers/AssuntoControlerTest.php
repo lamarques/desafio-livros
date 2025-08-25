@@ -7,13 +7,15 @@ use App\Livros\Application\Domain\Repository\AssuntoRepositoryInterface;
 use App\Livros\Application\Services\AssuntoService;
 use App\Livros\Dtos\AssuntoRequestDto;
 use App\Livros\Dtos\AssuntoResponseDto;
+use App\Models\Assunto;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class AssuntoControlerTest extends TestCase
 {
-    use WithFaker;
+    use RefreshDatabase, WithFaker;
     public function testCreateRetorna201ComPayload(): void
     {
         $this->assertTrue(
@@ -267,5 +269,45 @@ class AssuntoControlerTest extends TestCase
         $this->expectExceptionMessage('falha no banco');
 
         $service->update(7, $dto);
+    }
+
+    private function assuntoTable(): string
+    {
+        return (new Assunto())->getTable();
+    }
+
+    private function criarAssunto(string $descricao = 'Redes'): Assunto
+    {
+        $a = new Assunto();
+        $a->Descricao = $descricao;
+        $a->save();
+
+        return $a;
+    }
+
+    public function testDestroyRetorna200ERemoveAssunto(): void
+    {
+        $assunto = $this->criarAssunto('Topologia');
+
+        $resp = $this->deleteJson("/api/assunto/{$assunto->CodAs}");
+
+        $resp->assertStatus(200)
+            ->assertJsonFragment([
+                'message' => 'Assunto removido com sucesso.',
+            ]);
+
+        $this->assertDatabaseMissing($this->assuntoTable(), [
+            'CodAs' => $assunto->CodAs,
+        ]);
+    }
+
+    public function testDestroyRetorna404QuandoAssuntoNaoExiste(): void
+    {
+        $resp = $this->deleteJson('/api/assunto/999999');
+
+        $resp->assertStatus(404)
+            ->assertJsonFragment([
+                'message' => 'Erro ao remover o assunto ou assunto não encontrado.',
+            ]);
     }
 }

@@ -32,4 +32,9 @@ class AssuntoApplication
         return $this->assuntoService->update($id, $assuntoDto);
     }
 
+    public function delete(int $id): bool
+    {
+        return $this->assuntoService->delete($id);
+    }
+
 }

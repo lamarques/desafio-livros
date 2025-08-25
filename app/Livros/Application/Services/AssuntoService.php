@@ -118,4 +118,9 @@ class AssuntoService
             trim((string) $assuntoDto->Descricao)
         );
     }
+
+    public function delete(int $id): bool
+    {
+        return $this->assuntoRepository->deleteAssunto($id);
+    }
 }
