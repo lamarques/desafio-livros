@@ -46,7 +46,6 @@ class AssuntoExceptionTest extends TestCase
         $e->report();
 
         Log::shouldHaveReceived('warning')->once()->withArgs(function ($message, $context) use ($e) {
-            // Mensagem e chaves esperadas
             return $message === 'erro X'
                 && isset($context['status'], $context['context'], $context['exception'])
                 && $context['status'] === 422
@@ -80,25 +79,22 @@ class AssuntoExceptionTest extends TestCase
 
     public function testRenderComoRedirectAdicionaErroComErrosDeValidacaoEPreservaInput(): void
     {
-        // Sessão e previous URL para o back()
         $session = $this->app['session.store'];
         $session->start();
         $session->setPreviousUrl('http://localhost/form');
 
-        $e = \App\Livros\Exceptions\AssuntoException::invalid('Falha de validação.', [
+        $e = AssuntoException::invalid('Falha de validação.', [
             'Descricao' => ['máx 20'],
         ]);
 
-        // Request POST com input
-        $request = \Illuminate\Http\Request::create('/assuntos', 'POST', ['Descricao' => 'Muito grande']);
+        $request = Request::create('/assuntos', 'POST', ['Descricao' => 'Muito grande']);
         $request->setLaravelSession($session);
 
-        // 🔑 Torna este request o "request" global da app
         $this->app->instance('request', $request);
 
         $response = $e->render($request);
 
-        $this->assertInstanceOf(\Illuminate\Http\RedirectResponse::class, $response);
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('http://localhost/form', $response->getTargetUrl());
         $this->assertSame('Falha de validação.', $response->getSession()->get('error'));
 
@@ -106,7 +102,6 @@ class AssuntoExceptionTest extends TestCase
         $this->assertTrue($errors->has('Descricao'));
         $this->assertSame(['máx 20'], $errors->get('Descricao'));
 
-        // Agora o old input está presente
         $old = $response->getSession()->getOldInput();
         $this->assertSame('Muito grande', $old['Descricao']);
     }
@@ -117,22 +112,19 @@ class AssuntoExceptionTest extends TestCase
         $session->start();
         $session->setPreviousUrl('http://localhost/list');
 
-        $e = new \App\Livros\Exceptions\AssuntoException('Erro simples.', 400);
+        $e = new AssuntoException('Erro simples.', 400);
 
-        // GET não preserva input
-        $request = \Illuminate\Http\Request::create('/assuntos', 'GET');
+        $request = Request::create('/assuntos', 'GET');
         $request->setLaravelSession($session);
 
         $response = $e->render($request);
 
-        $this->assertInstanceOf(\Illuminate\Http\RedirectResponse::class, $response);
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('http://localhost/list', $response->getTargetUrl());
         $this->assertSame('Erro simples.', $response->getSession()->get('error'));
 
-        // Sem old input em GET
         $this->assertSame([], $response->getSession()->getOldInput());
 
-        // Sem withErrors()
         $errors = $response->getSession()->get('errors');
         if ($errors !== null) {
             $this->assertFalse($errors->any());
