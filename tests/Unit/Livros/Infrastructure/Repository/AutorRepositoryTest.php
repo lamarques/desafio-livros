@@ -96,4 +96,38 @@ class AutorRepositoryTest extends TestCase
             'CodAu' => $salvo->CodAu,
         ]);
     }
+
+    /** NOVO: getAllAutores retorna array vazio quando não há registros */
+    public function testGetAllAutoresRetornaArrayVazioQuandoNaoHaRegistros(): void
+    {
+        $lista = $this->repo->getAllAutores();
+
+        $this->assertIsArray($lista);
+        $this->assertCount(0, $lista);
+    }
+
+    /** NOVO: getAllAutores retorna lista de entidades corretamente mapeadas */
+    public function testGetAllAutoresRetornaListaDeEntidades(): void
+    {
+        $a = $this->criarAutor('Autor A');
+        $b = $this->criarAutor('Autor B');
+
+        $lista = $this->repo->getAllAutores();
+
+        $this->assertIsArray($lista);
+        $this->assertCount(2, $lista);
+        $this->assertContainsOnlyInstancesOf(AutorEntity::class, $lista);
+
+        // Facilita conferir pelo ID
+        $map = [];
+        foreach ($lista as $ent) {
+            $map[$ent->getCodAu()] = $ent;
+        }
+
+        $this->assertArrayHasKey($a->CodAu, $map);
+        $this->assertSame('Autor A', $map[$a->CodAu]->getNome());
+
+        $this->assertArrayHasKey($b->CodAu, $map);
+        $this->assertSame('Autor B', $map[$b->CodAu]->getNome());
+    }
 }

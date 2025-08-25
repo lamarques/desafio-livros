@@ -1,6 +1,7 @@
 <?php
 
 use App\Livros\Presentation\Http\Controllers\AssuntoControler;
+use App\Livros\Presentation\Http\Controllers\AutorController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'assunto'], function () {
@@ -14,4 +15,9 @@ Route::group(['prefix' => 'assunto'], function () {
         ->name('api.assunto.update');
     Route::delete('/{id}', [AssuntoControler::class, 'delete'])
         ->name('api.assunto.delete');
+});
+
+Route::group(['prefix' => 'autor'], function () {
+    Route::get('/', [AutorController::class, 'list'])
+        ->name('api.autor.index');
 });

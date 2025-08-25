@@ -60,4 +60,19 @@ class AutorRepository implements AutorRepositoryInterface
 
         return $autor->delete();
     }
+
+    #[\Override] public function getAllAutores(): array
+    {
+        $autoresData = $this->autorModel->all();
+        $autores = [];
+
+        foreach ($autoresData as $autorData) {
+            $autores[] = new Autor(
+                CodAu: $autorData->CodAu,
+                Nome: $autorData->Nome
+            );
+        }
+
+        return $autores;
+    }
 }

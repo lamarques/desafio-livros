@@ -13,4 +13,6 @@ interface AutorRepositoryInterface
     public function updateAutor(int $codAu, string $nome): bool;
 
     public function deleteAutor(int $codAu): bool;
+
+    public function getAllAutores(): array;
 }
