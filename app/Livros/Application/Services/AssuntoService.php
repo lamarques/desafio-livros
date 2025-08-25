@@ -96,4 +96,18 @@ class AssuntoService
             );
         }, $assuntos);
     }
+
+    public function show(int $id): ?AssuntoResponseDto
+    {
+        $assunto = $this->assuntoRepository->getAssunto($id);
+
+        if (!$assunto) {
+            return null;
+        }
+
+        return new AssuntoResponseDto(
+            CodAs: $assunto->getCodAs(),
+            Descricao: $assunto->getDescricao()
+        );
+    }
 }

@@ -104,4 +104,38 @@ class AssuntoApplicationTest extends TestCase
 
         $app->list();
     }
+
+    public function testShowRetornaDtoQuandoEncontrado(): void
+    {
+        $service = $this->createMock(AssuntoService::class);
+        $dto = new AssuntoResponseDto(CodAs: 1, Descricao: 'Redes');
+
+        $service->expects($this->once())
+            ->method('show')
+            ->with(1)
+            ->willReturn($dto);
+
+        $app = new AssuntoApplication($service);
+
+        $result = $app->show(1);
+
+        $this->assertInstanceOf(AssuntoResponseDto::class, $result);
+        $this->assertSame(1, $result->CodAs);
+        $this->assertSame('Redes', $result->Descricao);
+    }
+
+    public function testShowRetornaNullQuandoNaoEncontrado(): void
+    {
+        $service = $this->createMock(AssuntoService::class);
+        $service->expects($this->once())
+            ->method('show')
+            ->with(999)
+            ->willReturn(null);
+
+        $app = new AssuntoApplication($service);
+
+        $result = $app->show(999);
+
+        $this->assertNull($result);
+    }
 }

@@ -5,6 +5,7 @@ namespace Livros\Presentation\Http\Controllers;
 use App\Livros\Application\AssuntoApplication;
 use App\Livros\Dtos\AssuntoRequestDto;
 use App\Livros\Dtos\AssuntoResponseDto;
+use App\Livros\Exceptions\AssuntoException;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
@@ -65,7 +66,7 @@ class AssuntoControlerTest extends TestCase
         $mock->expects($this->never())->method('create');
         $this->instance(AssuntoApplication::class, $mock);
 
-        $muitoLongo = str_repeat('A', 21); // > 20
+        $muitoLongo = str_repeat('A', 21);
 
         $resp = $this->postJson('/api/assunto', ['Descricao' => $muitoLongo]);
 
@@ -88,7 +89,6 @@ class AssuntoControlerTest extends TestCase
                 new AssuntoResponseDto(CodAs: 2, Descricao: 'Banco de Dados'),
             ]);
 
-        // se você nomeou a rota, pode usar: route('api.assunto.list')
         $resp = $this->getJson('/api/assunto');
 
         $resp->assertOk()
@@ -112,5 +112,38 @@ class AssuntoControlerTest extends TestCase
 
         $resp->assertOk()
             ->assertExactJson(['data' => []]);
+    }
+
+    public function testShowRetorna200ComPayload(): void
+    {
+        $dto = new AssuntoResponseDto(CodAs: 1, Descricao: 'Redes');
+
+        $this->mock(AssuntoApplication::class, function ($mock) use ($dto) {
+            $mock->shouldReceive('show')
+            ->once()
+                ->with(1)
+                ->andReturn($dto);
+        });
+
+        $resp = $this->getJson('/api/assunto/1');
+
+        $resp->assertOk()
+            ->assertJsonPath('data.CodAs', 1)
+            ->assertJsonPath('data.Descricao', 'Redes');
+    }
+
+    public function testShowRetorna404QuandoNaoEncontrado(): void
+    {
+        $this->mock(AssuntoApplication::class, function ($mock) {
+            $mock->shouldReceive('show')
+            ->once()
+                ->with(999)
+                ->andReturn(null);
+        });
+
+        $resp = $this->getJson('/api/assunto/999');
+
+        $resp->assertStatus(404)
+            ->assertJsonFragment(['message' => 'Assunto não encontrado.']);
     }
 }

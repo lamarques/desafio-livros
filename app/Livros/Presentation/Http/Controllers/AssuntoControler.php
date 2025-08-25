@@ -38,4 +38,17 @@ class AssuntoControler extends Controller
         ]);
     }
 
+    public function show(int $id): JsonResponse
+    {
+        $assunto = $this->assuntoApplication->show($id);
+
+        if (!$assunto) {
+            return response()->json(['message' => 'Assunto não encontrado.'], 404);
+        }
+
+        return response()->json([
+            'data' => $assunto
+        ]);
+    }
+
 }

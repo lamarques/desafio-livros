@@ -22,4 +22,9 @@ class AssuntoApplication
         return $this->assuntoService->list();
     }
 
+    public function show(int $id): ?AssuntoResponseDto
+    {
+        return $this->assuntoService->show($id);
+    }
+
 }

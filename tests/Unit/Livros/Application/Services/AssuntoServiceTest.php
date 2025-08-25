@@ -218,4 +218,43 @@ class AssuntoServiceTest extends TestCase
 
         $this->assertSame([], $result);
     }
+
+    public function testShowRetornaDtoQuandoEncontrado(): void
+    {
+        $repo = $this->createMock(AssuntoRepositoryInterface::class);
+
+        $entity = new Assunto(
+            CodAs: 1,
+            Descricao: 'Redes'
+        );
+
+        $repo->expects($this->once())
+            ->method('getAssunto')
+            ->with(1)
+            ->willReturn($entity);
+
+        $service = new AssuntoService($repo);
+
+        $result = $service->show(1);
+
+        $this->assertInstanceOf(AssuntoResponseDto::class, $result);
+        $this->assertSame(1, $result->CodAs);
+        $this->assertSame('Redes', $result->Descricao);
+    }
+
+    public function testShowRetornaNullQuandoNaoEncontrado(): void
+    {
+        $repo = $this->createMock(AssuntoRepositoryInterface::class);
+
+        $repo->expects($this->once())
+            ->method('getAssunto')
+            ->with(999)
+            ->willReturn(null);
+
+        $service = new AssuntoService($repo);
+
+        $result = $service->show(999);
+
+        $this->assertNull($result);
+    }
 }
