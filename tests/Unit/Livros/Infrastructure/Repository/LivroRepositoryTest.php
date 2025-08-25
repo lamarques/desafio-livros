@@ -160,7 +160,6 @@ class LivroRepositoryTest extends TestCase
         $this->assertCount(2, $lista);
         $this->assertContainsOnlyInstancesOf(LivroResponseDto::class, $lista);
 
-        // Ordenação não é garantida — validamos por presença
         $map = [];
         foreach ($lista as $dto) {
             $map[$dto->Codl] = $dto;
@@ -178,4 +177,43 @@ class LivroRepositoryTest extends TestCase
         $this->assertSame(2, $map[$b->Codl]->Edicao);
         $this->assertSame('2002', $map[$b->Codl]->AnoPublicacao);
     }
+
+    public function testGetLastInsertedIdRetornaIdAposSalvar(): void
+    {
+        $repo = new LivroRepository(new LivroModel());
+
+        $dto = new LivrosSaveDto(
+            titulo: 'DDD',
+            editora: 'Addison-Wesley',
+            edicao: 1,
+            anoPublicacao: '2003',
+            autores: [],
+            assuntos: []
+        );
+
+        $ok = $repo->saveLivro($dto);
+
+        $this->assertTrue($ok, 'Falha ao salvar livro via repositório.');
+
+        $lastId = $repo->getLastInsertedId();
+        $this->assertIsInt($lastId);
+        $this->assertGreaterThan(0, $lastId, 'getLastInsertedId() deve retornar um ID > 0 após salvar.');
+
+        $this->assertDatabaseHas($this->livroTable(), [
+            'Codl'          => $lastId,
+            'Titulo'        => 'DDD',
+            'Editora'       => 'Addison-Wesley',
+            'Edicao'        => 1,
+            'AnoPublicacao' => '2003',
+        ]);
+    }
+
+    public function testGetLastInsertedIdAntesDeSalvarDisparaErroDePropriedadeNaoInicializada(): void
+    {
+        $repo = new LivroRepository(new LivroModel());
+        $this->expectException(\Error::class);
+        $repo->getLastInsertedId();
+    }
+
+
 }

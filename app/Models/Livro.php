@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Livro extends Model
 {
-    /** @use HasFactory<\Database\Factories\LivroFactory> */
     use HasFactory;
 
     protected $table = 'Livro';

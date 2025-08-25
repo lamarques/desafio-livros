@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Assunto extends Model
 {
-    /** @use HasFactory<\Database\Factories\AssuntoFactory> */
     use HasFactory;
 
     protected $table = 'Assunto';
@@ -26,7 +25,7 @@ class Assunto extends Model
     public function livros()
     {
         return $this->belongsToMany(
-            \App\Models\Livro::class,
+            Livro::class,
             'Livro_Assuntos',
             'Assunto_CodAs',
             'Livro_Codl'

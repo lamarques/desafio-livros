@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Assunto;
 use Illuminate\Database\Seeder;
 
 class AssuntoSeeder extends Seeder
@@ -12,6 +12,6 @@ class AssuntoSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Assunto::factory(10)->create();
     }
 }

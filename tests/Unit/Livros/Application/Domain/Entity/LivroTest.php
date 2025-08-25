@@ -32,6 +32,8 @@ class LivroTest extends TestCase
         $this->assertSame($editora,$livro->getEditora());
         $this->assertSame($edicao, $livro->getEdicao());
         $this->assertSame($ano,    $livro->getAnoPublicacao());
+        $this->assertIsArray($livro->getAutores());
+        $this->assertIsArray($livro->getAssuntos());
     }
 
     public function testLancaTypeErrorQuandoCodlNaoEhInteiro(): void
