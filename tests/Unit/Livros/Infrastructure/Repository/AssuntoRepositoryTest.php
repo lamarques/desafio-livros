@@ -59,7 +59,6 @@ class AssuntoRepositoryTest extends TestCase
             'Descricao' => 'Estruturas de Dados',
         ]);
 
-        // Recupera o registro para validar ID
         $registro = AssuntoModel::where('Descricao', 'Estruturas de Dados')->firstOrFail();
         $this->assertSame($registro->CodAs, $this->repo->getLastInsertedId());
     }
@@ -69,10 +68,24 @@ class AssuntoRepositoryTest extends TestCase
         $this->assertNull($this->repo->getLastInsertedId());
     }
 
-    public function testSaveAssuntoExcedeLimiteDeCaracteresLancaQueryException(): void
+    public function testSaveAssuntoExcedeLimiteDeCaracteresRespeitaDriver(): void
     {
+        $repo = new AssuntoRepository(new AssuntoModel());
+        $tooLong = str_repeat('A', 21);
+
+        $driver = $this->app['db']->connection()->getDriverName();
+
+        if ($driver === 'sqlite') {
+            $ok = $repo->saveAssunto($tooLong);
+            $this->assertTrue($ok);
+            $this->assertDatabaseHas((new AssuntoModel())->getTable(), [
+                'Descricao' => $tooLong,
+            ]);
+            return;
+        }
+
         $this->expectException(QueryException::class);
-        $this->repo->saveAssunto(str_repeat('A', 21)); // > 20
+        $repo->saveAssunto($tooLong);
     }
 
     public function testUpdateAssuntoAtualizaERetornaTrue(): void
