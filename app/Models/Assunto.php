@@ -8,29 +8,26 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @codeCoverageIgnore
  */
-class Autor extends Model
+class Assunto extends Model
 {
-
     use HasFactory;
 
-    protected $table = 'Autor';
-    protected $primaryKey = 'CodAu';
-    public $timestamps = false;
-
+    protected $table = 'Assunto';
+    protected $primaryKey = 'CodAs';
     protected $fillable = [
-        'Nome',
+        'Descricao',
     ];
-
+    public $timestamps = false;
     protected $casts = [
-        'CodAu' => 'integer',
+        'CodAs' => 'integer',
     ];
 
     public function livros()
     {
         return $this->belongsToMany(
             Livro::class,
-            'Livro_Autor',
-            'Autor_CodAu',
+            'Livro_Assuntos',
+            'Assunto_CodAs',
             'Livro_Codl'
         );
     }
