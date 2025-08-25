@@ -20,7 +20,6 @@ class LivroRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Repositório injetando o model (usado para find/all)
         $this->repo = new LivroRepository(new LivroModel());
     }
 
@@ -75,7 +74,9 @@ class LivroRepositoryTest extends TestCase
             titulo: 'Domain-Driven Design',
             editora: 'Addison-Wesley',
             edicao: 1,
-            anoPublicacao: '2003'
+            anoPublicacao: '2003',
+            autores: [],
+            assuntos: []
         );
 
         $ok = $this->repo->saveLivro($saveDto);
@@ -92,7 +93,7 @@ class LivroRepositoryTest extends TestCase
     public function testUpdateLivroRetornaFalseSeNaoEncontrado(): void
     {
         $req = new LivroRequestDto(123456);
-        $save = new LivrosSaveDto('Novo Título', 'Nova Editora', 2, '2024');
+        $save = new LivrosSaveDto('Novo Título', 'Nova Editora', 2, '2024', [], []);
 
         $this->assertFalse($this->repo->updateLivro($req, $save));
     }
@@ -107,7 +108,7 @@ class LivroRepositoryTest extends TestCase
         ]);
 
         $req = new LivroRequestDto($salvo->Codl);
-        $save = new LivrosSaveDto('Novo', 'Editora B', 3, '2024');
+        $save = new LivrosSaveDto('Novo', 'Editora B', 3, '2024', [], []);
 
         $ok = $this->repo->updateLivro($req, $save);
         $this->assertTrue($ok);
@@ -123,14 +124,14 @@ class LivroRepositoryTest extends TestCase
 
     public function testDeleteLivroRetornaFalseSeNaoEncontrado(): void
     {
-        $req = new LivroResponseDto(999, 'X', 'Y', 1, '2020');
+        $req = new LivroRequestDto(999);
         $this->assertFalse($this->repo->deleteLivro($req));
     }
 
     public function testDeleteLivroRemoveERetornaTrue(): void
     {
         $salvo = $this->criarLivro();
-        $req = new LivroResponseDto($salvo->Codl, $salvo->Titulo, $salvo->Editora, $salvo->Edicao, $salvo->AnoPublicacao);
+        $req = new LivroRequestDto($salvo->Codl);
 
         $ok = $this->repo->deleteLivro($req);
         $this->assertTrue($ok);

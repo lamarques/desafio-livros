@@ -13,7 +13,9 @@ class LivrosSaveDtoTest extends TestCase
             titulo: 'O Guia do Programador',
             editora: 'TechBooks',
             edicao: 2,
-            anoPublicacao: '2020'
+            anoPublicacao: '2020',
+            autores: [],
+            assuntos: []
         );
 
         $this->assertSame('O Guia do Programador', $dto->titulo);
@@ -30,30 +32,30 @@ class LivrosSaveDtoTest extends TestCase
     public function testLancaTypeErrorQuandoTituloNaoEhString(): void
     {
         $this->expectException(\TypeError::class);
-        new LivrosSaveDto([], 'Editora', 1, '2020'); // array garante TypeError
+        new LivrosSaveDto([], 'Editora', 1, '2020', [], []);
     }
 
     public function testLancaTypeErrorQuandoEditoraNaoEhString(): void
     {
         $this->expectException(\TypeError::class);
-        new LivrosSaveDto('Titulo', [], 1, '2020');
+        new LivrosSaveDto('Titulo', [], 1, '2020', [], []);
     }
 
     public function testLancaTypeErrorQuandoEdicaoNaoEhInteiro(): void
     {
         $this->expectException(\TypeError::class);
-        new LivrosSaveDto('Titulo', 'Editora', [], '2020');
+        new LivrosSaveDto('Titulo', 'Editora', [], '2020', [], []);
     }
 
     public function testLancaTypeErrorQuandoAnoPublicacaoNaoEhString(): void
     {
         $this->expectException(\TypeError::class);
-        new LivrosSaveDto('Titulo', 'Editora', 1, []);
+        new LivrosSaveDto('Titulo', 'Editora', 1, [], [], []);
     }
 
     public function testPermiteAlterarCamposComTiposValidos(): void
     {
-        $dto = new LivrosSaveDto('A', 'B', 1, '2000');
+        $dto = new LivrosSaveDto('A', 'B', 1, '2000', [], []);
 
         $dto->titulo = 'Novo Título';
         $dto->editora = 'Nova Editora';
@@ -68,9 +70,9 @@ class LivrosSaveDtoTest extends TestCase
 
     public function testLancaTypeErrorAoAtribuirTiposInvalidos(): void
     {
-        $dto = new LivrosSaveDto('A', 'B', 1, '2000');
+        $dto = new LivrosSaveDto('A', 'B', 1, '2000', [], []);
 
         $this->expectException(\TypeError::class);
-        $dto->edicao = 'nao-inteiro'; // propriedade tipada int
+        $dto->edicao = 'nao-inteiro';
     }
 }

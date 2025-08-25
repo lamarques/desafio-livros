@@ -25,7 +25,7 @@ class LivroTest extends TestCase
         $edicao = $this->faker->numberBetween(1, 50);
         $ano    = (string) $this->faker->numberBetween(1900, (int) date('Y'));
 
-        $livro = new Livro($codl, $titulo, $editora, $edicao, $ano);
+        $livro = new Livro($codl, $titulo, $editora, $edicao, $ano, [], []);
 
         $this->assertSame($codl,   $livro->getCodl());
         $this->assertSame($titulo, $livro->getTitulo());

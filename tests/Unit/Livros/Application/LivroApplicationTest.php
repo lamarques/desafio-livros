@@ -3,8 +3,7 @@
 namespace Livros\Application;
 
 use App\Livros\Application\LivroApplication;
-use App\Livros\Application\Domain\Entity\Livro;
-use App\Livros\Application\Domain\Repository\LivroRepositoryInterface;
+use App\Livros\Application\Services\LivroService;
 use App\Livros\Dtos\LivroRequestDto;
 use App\Livros\Dtos\LivroResponseDto;
 use PHPUnit\Framework\TestCase;
@@ -13,31 +12,29 @@ class LivroApplicationTest extends TestCase
 {
     public function testGetLivroRetornaResponseDtoComDadosDoRepository(): void
     {
-        // Arrange
-        $repo = $this->createMock(LivroRepositoryInterface::class);
-        $request = $this->createStub(LivroRequestDto::class);
+        $service = $this->createMock(LivroService::class);
+        $request = new LivroRequestDto(1);
 
-        $entity = new Livro(
+        $dto = new LivroResponseDto(
             Codl: 1,
             Titulo: 'O Guia do Programador',
             Editora: 'TechBooks',
             Edicao: 2,
-            AnoPublicacao: '2020'
+            AnoPublicacao: '2020',
+            Autores: [],
+            Assuntos: []
         );
 
-        $repo->expects($this->once())
+        $service->expects($this->once())
             ->method('getLivro')
-            ->with($request) // garante que o mesmo DTO foi repassado
-            ->willReturn($entity);
+            ->with($request)
+            ->willReturn($dto);
 
-        $app = new LivroApplication($repo);
+        $app = new LivroApplication($service);
 
-        // Act
         $response = $app->getLivro($request);
 
-        // Assert
         $this->assertInstanceOf(LivroResponseDto::class, $response);
-        // Assumindo que o ResponseDto expõe getters equivalentes:
         $this->assertSame(1, $response->Codl);
         $this->assertSame('O Guia do Programador', $response->Titulo);
         $this->assertSame('TechBooks', $response->Editora);
@@ -47,22 +44,19 @@ class LivroApplicationTest extends TestCase
 
     public function testGetLivroPropagaExcecaoDoRepository(): void
     {
-        // Arrange
-        $repo = $this->createMock(LivroRepositoryInterface::class);
-        $request = $this->createStub(LivroRequestDto::class);
+        $service = $this->createMock(LivroService::class);
+        $request = new LivroRequestDto(1);
 
-        $repo->expects($this->once())
+        $service->expects($this->once())
             ->method('getLivro')
             ->with($request)
             ->willThrowException(new \RuntimeException('Não encontrado'));
 
-        $app = new LivroApplication($repo);
+        $app = new LivroApplication($service);
 
-        // Assert
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Não encontrado');
 
-        // Act
         $app->getLivro($request);
     }
 }

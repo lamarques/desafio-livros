@@ -19,7 +19,6 @@ class LivroRequestDtoTest extends TestCase
     {
         $this->expectException(\TypeError::class);
 
-        // usar array garante TypeError mesmo sem strict_types
         new LivroRequestDto([]);
     }
 
@@ -36,6 +35,6 @@ class LivroRequestDtoTest extends TestCase
         $dto = new LivroRequestDto(1);
 
         $this->expectException(\TypeError::class);
-        $dto->Codl = 'abc'; // assignment inválido em propriedade tipada int
+        $dto->Codl = 'abc';
     }
 }

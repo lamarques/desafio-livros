@@ -4,19 +4,17 @@ namespace Tests\Unit\Livros\Dto;
 
 use App\Livros\Dtos\LivroResponseDto;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 class LivroResponseDtoTest extends TestCase
 {
-    /** Helper: tenta getter, depois propriedade pública (qualquer caixa), senão Reflection */
     private function readValue(object $dto, string $expectedName)
     {
-        // 1) getter padrão (case-insensitive no PHP)
         $getter = 'get' . $expectedName;
         if (method_exists($dto, $getter)) {
             return $dto->{$getter}();
         }
 
-        // 2) tenta propriedades com variações de caixa
         $candidates = [
             $expectedName,
             lcfirst($expectedName),
@@ -25,14 +23,12 @@ class LivroResponseDtoTest extends TestCase
         ];
 
         foreach ($candidates as $cand) {
-            // isset cobre públicas definidas; property_exists cobre mesmo se null
             if (property_exists($dto, $cand)) {
                 return $dto->{$cand};
             }
         }
 
-        // 3) Reflection: encontra a propriedade ignorando caixa e lê o valor
-        $ref = new \ReflectionClass($dto);
+        $ref = new ReflectionClass($dto);
         foreach ($ref->getProperties() as $prop) {
             if (strtolower($prop->getName()) === strtolower($expectedName)) {
                 $prop->setAccessible(true);
@@ -40,7 +36,6 @@ class LivroResponseDtoTest extends TestCase
             }
         }
 
-        // se não achou nada, retorna null para o assert falhar com mensagem clara
         return null;
     }
 
@@ -51,7 +46,9 @@ class LivroResponseDtoTest extends TestCase
             'O Guia do Programador',
             'TechBooks',
             2,
-            '2020'
+            '2020',
+            [],
+            []
         );
 
         $this->assertSame(1, $this->readValue($dto, 'Codl'));
@@ -60,7 +57,6 @@ class LivroResponseDtoTest extends TestCase
         $this->assertSame(2, $this->readValue($dto, 'Edicao'));
         $this->assertSame('2020', $this->readValue($dto, 'AnoPublicacao'));
 
-        // checagens de tipo
         $this->assertIsInt($this->readValue($dto, 'Codl'));
         $this->assertIsString($this->readValue($dto, 'Titulo'));
         $this->assertIsString($this->readValue($dto, 'Editora'));
@@ -71,30 +67,30 @@ class LivroResponseDtoTest extends TestCase
     public function testLancaTypeErrorQuandoCodlNaoEhInteiro(): void
     {
         $this->expectException(\TypeError::class);
-        new LivroResponseDto([], 'Titulo', 'Editora', 1, '2020');
+        new LivroResponseDto([], 'Titulo', 'Editora', 1, '2020', [], []);
     }
 
     public function testLancaTypeErrorQuandoTituloNaoEhString(): void
     {
         $this->expectException(\TypeError::class);
-        new LivroResponseDto(1, [], 'Editora', 1, '2020');
+        new LivroResponseDto(1, [], 'Editora', 1, '2020', [], []);
     }
 
     public function testLancaTypeErrorQuandoEditoraNaoEhString(): void
     {
         $this->expectException(\TypeError::class);
-        new LivroResponseDto(1, 'Titulo', [], 1, '2020');
+        new LivroResponseDto(1, 'Titulo', [], 1, '2020', [], []);
     }
 
     public function testLancaTypeErrorQuandoEdicaoNaoEhInteiro(): void
     {
         $this->expectException(\TypeError::class);
-        new LivroResponseDto(1, 'Titulo', 'Editora', [], '2020');
+        new LivroResponseDto(1, 'Titulo', 'Editora', [], '2020', [], []);
     }
 
     public function testLancaTypeErrorQuandoAnoPublicacaoNaoEhString(): void
     {
         $this->expectException(\TypeError::class);
-        new LivroResponseDto(1, 'Titulo', 'Editora', 1, []);
+        new LivroResponseDto(1, 'Titulo', 'Editora', 1, [], [], []);
     }
 }
