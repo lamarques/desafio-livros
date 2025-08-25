@@ -110,4 +110,12 @@ class AssuntoService
             Descricao: $assunto->getDescricao()
         );
     }
+
+    public function update(int $id, AssuntoRequestDto $assuntoDto): bool
+    {
+        return $this->assuntoRepository->updateAssunto(
+            $id,
+            trim((string) $assuntoDto->Descricao)
+        );
+    }
 }

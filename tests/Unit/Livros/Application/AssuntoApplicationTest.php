@@ -138,4 +138,67 @@ class AssuntoApplicationTest extends TestCase
 
         $this->assertNull($result);
     }
+
+    public function testUpdateRetornaTrueQuandoServiceAtualiza(): void
+    {
+        $service = $this->createMock(AssuntoService::class);
+        $app = new AssuntoApplication($service);
+
+        $dto = new AssuntoRequestDto(Descricao: 'Redes Avançadas');
+
+        $service->expects($this->once())
+            ->method('update')
+            ->with(
+                5,
+                $this->callback(function ($arg) {
+                    return $arg instanceof AssuntoRequestDto
+                        && $arg->Descricao === 'Redes Avançadas';
+                })
+            )
+            ->willReturn(true);
+
+        $ok = $app->update(5, $dto);
+
+        $this->assertTrue($ok);
+        $this->assertIsBool($ok);
+    }
+
+    public function testUpdateRetornaFalseQuandoServiceFalha(): void
+    {
+        $service = $this->createMock(AssuntoService::class);
+        $app = new AssuntoApplication($service);
+
+        $dto = new AssuntoRequestDto(Descricao: 'Qualquer');
+
+        $service->expects($this->once())
+            ->method('update')
+            ->with(
+                10,
+                $this->isInstanceOf(AssuntoRequestDto::class)
+            )
+            ->willReturn(false);
+
+        $ok = $app->update(10, $dto);
+
+        $this->assertFalse($ok);
+        $this->assertIsBool($ok);
+    }
+
+    public function testUpdatePropagaExcecaoDoService(): void
+    {
+        $service = $this->createMock(AssuntoService::class);
+        $app = new AssuntoApplication($service);
+
+        $dto = new AssuntoRequestDto(Descricao: 'Erro');
+
+        $service->expects($this->once())
+            ->method('update')
+            ->with(7, $this->isInstanceOf(AssuntoRequestDto::class))
+            ->willThrowException(new \RuntimeException('falhou'));
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('falhou');
+
+        $app->update(7, $dto);
+    }
 }

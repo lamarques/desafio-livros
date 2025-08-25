@@ -10,4 +10,6 @@ Route::group(['prefix' => 'assunto'], function () {
         ->name('api.assunto.index');
     Route::get('/{id}', [AssuntoControler::class, 'show'])
         ->name('api.assunto.show');
+    Route::put('/{id}', [AssuntoControler::class, 'update'])
+        ->name('api.assunto.update');
 });

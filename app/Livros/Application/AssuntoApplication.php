@@ -27,4 +27,9 @@ class AssuntoApplication
         return $this->assuntoService->show($id);
     }
 
+    public function update(int $id, AssuntoRequestDto $assuntoDto): bool
+    {
+        return $this->assuntoService->update($id, $assuntoDto);
+    }
+
 }

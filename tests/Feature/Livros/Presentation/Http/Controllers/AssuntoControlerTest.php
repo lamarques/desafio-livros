@@ -3,14 +3,17 @@
 namespace Livros\Presentation\Http\Controllers;
 
 use App\Livros\Application\AssuntoApplication;
+use App\Livros\Application\Domain\Repository\AssuntoRepositoryInterface;
+use App\Livros\Application\Services\AssuntoService;
 use App\Livros\Dtos\AssuntoRequestDto;
 use App\Livros\Dtos\AssuntoResponseDto;
-use App\Livros\Exceptions\AssuntoException;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class AssuntoControlerTest extends TestCase
 {
+    use WithFaker;
     public function testCreateRetorna201ComPayload(): void
     {
         $this->assertTrue(
@@ -145,5 +148,124 @@ class AssuntoControlerTest extends TestCase
 
         $resp->assertStatus(404)
             ->assertJsonFragment(['message' => 'Assunto não encontrado.']);
+    }
+
+    public function testUpdateRetorna200ComPayload(): void
+    {
+        $appMock = $this->createMock(AssuntoApplication::class);
+        $appMock->expects($this->once())
+            ->method('update')
+            ->with(
+                5,
+                $this->callback(function (AssuntoRequestDto $dto) {
+                    return $dto->Descricao === 'Redes Avançadas';
+                })
+            )
+            ->willReturn(true);
+
+        $this->instance(AssuntoApplication::class, $appMock);
+
+        $resp = $this->putJson('/api/assunto/5', [
+            'Descricao' => 'Redes Avançadas',
+        ]);
+
+        $resp->assertOk()
+            ->assertJsonFragment([
+                'message' => 'Assunto atualizado com sucesso.',
+            ])
+            ->assertJsonPath('data.CodAs', 5)
+            ->assertJsonPath('data.Descricao', 'Redes Avançadas');
+    }
+
+    public function testUpdateRetorna404QuandoAssuntoNaoExiste(): void
+    {
+        $appMock = $this->createMock(AssuntoApplication::class);
+        $appMock->expects($this->once())
+            ->method('update')
+            ->with(
+                999,
+                $this->isInstanceOf(AssuntoRequestDto::class)
+            )
+            ->willReturn(false);
+
+        $this->instance(AssuntoApplication::class, $appMock);
+
+        $resp = $this->putJson('/api/assunto/999', [
+            'Descricao' => 'Qualquer',
+        ]);
+
+        $resp->assertNotFound()
+            ->assertJsonFragment([
+                'message' => 'Erro ao atualizar o assunto ou assunto nao encontrado.',
+            ]);
+    }
+
+    public function testUpdateValidaDescricaoObrigatoriaRetorna422(): void
+    {
+        $appMock = $this->createMock(AssuntoApplication::class);
+        $appMock->expects($this->never())->method('update');
+        $this->instance(AssuntoApplication::class, $appMock);
+
+        $resp = $this->putJson('/api/assunto/7', []);
+
+        $resp->assertUnprocessable()
+            ->assertJsonValidationErrors(['Descricao']);
+    }
+
+    public function testUpdateRetornaTrueQuandoRepositoryAtualiza(): void
+    {
+        $repo = $this->createMock(AssuntoRepositoryInterface::class);
+        $service = new AssuntoService($repo);
+
+        $repo->expects($this->once())
+            ->method('updateAssunto')
+            ->with(
+                5,
+                $this->identicalTo('Redes') // deve vir sem espaços
+            )
+            ->willReturn(true);
+
+        $dto = new AssuntoRequestDto(Descricao: '  Redes  ');
+
+        $ok = $service->update(5, $dto);
+
+        $this->assertTrue($ok);
+        $this->assertIsBool($ok);
+    }
+
+    public function testUpdateRetornaFalseQuandoRepositoryRetornaFalse(): void
+    {
+        $repo = $this->createMock(AssuntoRepositoryInterface::class);
+        $service = new AssuntoService($repo);
+
+        $repo->expects($this->once())
+            ->method('updateAssunto')
+            ->with(10, 'Topologia')
+            ->willReturn(false);
+
+        $dto = new AssuntoRequestDto(Descricao: 'Topologia');
+
+        $ok = $service->update(10, $dto);
+
+        $this->assertFalse($ok);
+        $this->assertIsBool($ok);
+    }
+
+    public function testUpdatePropagaExcecaoDoRepository(): void
+    {
+        $repo = $this->createMock(AssuntoRepositoryInterface::class);
+        $service = new AssuntoService($repo);
+
+        $repo->expects($this->once())
+            ->method('updateAssunto')
+            ->with(7, 'Segurança')
+            ->willThrowException(new \RuntimeException('falha no banco'));
+
+        $dto = new AssuntoRequestDto(Descricao: 'Segurança');
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('falha no banco');
+
+        $service->update(7, $dto);
     }
 }
