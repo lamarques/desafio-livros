@@ -9,7 +9,9 @@ class LivroResponseDto
         public string $Titulo,
         public string $Editora,
         public int $Edicao,
-        public string $AnoPublicacao
+        public string $AnoPublicacao,
+        public array $Autores,
+        public array $Assuntos
     )
     {
     }

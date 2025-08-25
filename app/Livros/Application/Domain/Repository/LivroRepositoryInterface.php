@@ -12,6 +12,6 @@ interface LivroRepositoryInterface
     public function getLivro(LivroRequestDto $codl): ?Livro;
     public function saveLivro(LivrosSaveDto $livroData): bool;
     public function updateLivro(LivroRequestDto $codl, LivrosSaveDto $livroData): bool;
-    public function deleteLivro(LivroResponseDto $codl): bool;
+    public function deleteLivro(LivroRequestDto $codl): bool;
     public function listLivros(): array;
 }

@@ -10,7 +10,9 @@ class Livro
         private string $Titulo,
         private string $Editora,
         private int $Edicao,
-        private string $AnoPublicacao
+        private string $AnoPublicacao,
+        private array $Autores,
+        private array $Assuntos
     )
     {
     }
@@ -38,5 +40,15 @@ class Livro
     public function getAnoPublicacao(): string
     {
         return $this->AnoPublicacao;
+    }
+
+    public function getAutores(): array
+    {
+        return $this->Autores;
+    }
+
+    public function getAssuntos(): array
+    {
+        return $this->Assuntos;
     }
 }

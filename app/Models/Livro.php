@@ -41,7 +41,7 @@ class Livro extends Model
     {
         return $this->belongsToMany(
             Assunto::class,
-            'Livro_Assuntos',
+            'Livro_Assunto',
             'Livro_Codl',
             'Assunto_CodAs'
         );

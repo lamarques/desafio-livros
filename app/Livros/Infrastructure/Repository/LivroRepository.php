@@ -12,6 +12,8 @@ use App\Models\Livro as LivroModel;
 class LivroRepository implements LivroRepositoryInterface
 {
 
+    private int $lastInsertedId;
+
     public function __construct(private readonly LivroModel $livroModel)
     {
     }
@@ -27,7 +29,9 @@ class LivroRepository implements LivroRepositoryInterface
             $data->Titulo,
             $data->Editora,
             $data->Edicao,
-            $data->AnoPublicacao
+            $data->AnoPublicacao,
+            $data->autores->toArray(),
+            $data->assuntos->toArray()
         );
     }
 
@@ -38,15 +42,26 @@ class LivroRepository implements LivroRepositoryInterface
         $livro->Editora = $livroData->editora;
         $livro->Edicao = $livroData->edicao;
         $livro->AnoPublicacao = $livroData->anoPublicacao;
+        $livro->save();
 
-        return $livro->save();
+        $livro->autores()->attach($livroData->autores);
+        $livro->assuntos()->attach($livroData->assuntos);
+
+        $this->lastInsertedId = $livro->Codl;
+
+        return true;
+    }
+
+    public function getLastInsertedId(): int
+    {
+        return $this->lastInsertedId;
     }
 
     public function updateLivro(LivroRequestDto $codl, LivrosSaveDto $livroData): bool
     {
         $livro = $this->livroModel->find($codl->Codl);
         if (!$livro) {
-            return false; // Livro não encontrado
+            return false;
         }
 
         $livro->Titulo = $livroData->titulo;
@@ -54,10 +69,15 @@ class LivroRepository implements LivroRepositoryInterface
         $livro->Edicao = $livroData->edicao;
         $livro->AnoPublicacao = $livroData->anoPublicacao;
 
-        return $livro->save();
+        $livro->save();
+
+        $livro->autores()->sync($livroData->autores);
+        $livro->assuntos()->sync($livroData->assuntos);
+
+        return true;
     }
 
-    public function deleteLivro(LivroResponseDto $livroResponseDto): bool
+    public function deleteLivro(LivroRequestDto $livroResponseDto): bool
     {
         $livro = $this->livroModel->find($livroResponseDto->Codl);
         if (!$livro) {
@@ -72,13 +92,16 @@ class LivroRepository implements LivroRepositoryInterface
         $livros = $this->livroModel->all();
         $result = [];
 
+
         foreach ($livros as $livro) {
             $result[] = new LivroResponseDto(
                 $livro->Codl,
                 $livro->Titulo,
                 $livro->Editora,
                 $livro->Edicao,
-                $livro->AnoPublicacao
+                $livro->AnoPublicacao,
+                $livro->autores->toArray(),
+                $livro->assuntos->toArray()
             );
         }
 

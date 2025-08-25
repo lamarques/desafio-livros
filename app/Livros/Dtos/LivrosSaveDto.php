@@ -8,7 +8,9 @@ class LivrosSaveDto
         public string $titulo,
         public string $editora,
         public int $edicao,
-        public string $anoPublicacao
+        public string $anoPublicacao,
+        public array $autores,
+        public array $assuntos
     ) {
     }
 }

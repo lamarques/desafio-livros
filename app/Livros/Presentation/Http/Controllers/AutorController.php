@@ -4,8 +4,9 @@ namespace App\Livros\Presentation\Http\Controllers;
 
 use App\Livros\Application\AutorApplication;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller;
 
-class AutorController
+class AutorController extends Controller
 {
 
     public function __construct(private readonly AutorApplication $autorApplication)
