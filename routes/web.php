@@ -22,3 +22,7 @@ Route::get('/authors', function () {
 Route::get('/subjects', function () {
     return view('welcome');
 });
+
+Route::get('/relatorios', function () {
+    return view('welcome');
+})->name('relatorios.index');

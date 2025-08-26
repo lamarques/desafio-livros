@@ -8,6 +8,7 @@ import Navbar from './components/common/Navbar';
 import BookList from './components/books/BookList';
 import AuthorList from './components/authors/AuthorList';
 import SubjectList from './components/subjects/SubjectList';
+import ReportMenu from './components/reports/ReportMenu';
 
 const App = () => {
     return (
@@ -20,6 +21,7 @@ const App = () => {
                             <Route path="/books" element={<BookList />} />
                             <Route path="/authors" element={<AuthorList />} />
                             <Route path="/subjects" element={<SubjectList />} />
+                            <Route path="/relatorios" element={<ReportMenu />} />
                             <Route path="/" element={<h1 className='text-center h2'>Bem-vindo ao Cadastro de Livros</h1>} />
                         </Routes>
                     </div>
