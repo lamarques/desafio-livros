@@ -22,6 +22,7 @@ class LivroApplicationTest extends TestCase
             Editora: 'TechBooks',
             Edicao: 2,
             AnoPublicacao: '2020',
+            Valor: 59.90,
             Autores: [],
             Assuntos: []
         );
@@ -41,6 +42,7 @@ class LivroApplicationTest extends TestCase
         $this->assertSame('TechBooks', $response->Editora);
         $this->assertSame(2, $response->Edicao);
         $this->assertSame('2020', $response->AnoPublicacao);
+        $this->assertSame(59.90, $response->Valor);
     }
 
     public function testGetLivroPropagaExcecaoDoRepository(): void
@@ -88,9 +90,10 @@ class LivroApplicationTest extends TestCase
             'AnoPublicacao' => '2003',
             'AutorID'       => [10, 11],
             'AssuntoID'     => [5, 6],
+            'Valor'         => 17.97,
         ];
 
-        $expected = new LivroResponseDto(7, 'DDD', 'Addison-Wesley', 1, '2003', [10, 11], [5, 6]);
+        $expected = new LivroResponseDto(7, 'DDD', 'Addison-Wesley', 1, '2003', 17.97, [10, 11], [5, 6]);
 
         $service->expects($this->once())
             ->method('createLivro')
@@ -101,6 +104,7 @@ class LivroApplicationTest extends TestCase
                 $editora       = $p['editora']       ?? $p['Editora']       ?? null;
                 $edicao        = $p['edicao']        ?? $p['Edicao']        ?? null;
                 $anoPublicacao = $p['anoPublicacao'] ?? $p['AnoPublicacao'] ?? null;
+                $valor         = $p['valor']         ?? $p['Valor']         ?? null;
                 $autores       = $p['autores']       ?? null;
                 $assuntos      = $p['assuntos']      ?? null;
 
@@ -108,6 +112,7 @@ class LivroApplicationTest extends TestCase
                     && $editora       === $input['Editora']
                     && $edicao        === $input['Edicao']
                     && $anoPublicacao === $input['AnoPublicacao']
+                    && $valor         === $input['Valor']
                     && $autores       === $input['AutorID']
                     && $assuntos      === $input['AssuntoID'];
             }))
@@ -126,8 +131,8 @@ class LivroApplicationTest extends TestCase
         $app     = new LivroApplication($service);
 
         $list = [
-            new LivroResponseDto(1, 'A', 'Ed1', 1, '2010', [], []),
-            new LivroResponseDto(2, 'B', 'Ed2', 2, '2015', [], []),
+            new LivroResponseDto(1, 'A', 'Ed1', 1, '2010', 17.95, [], []),
+            new LivroResponseDto(2, 'B', 'Ed2', 2, '2015', 17.95, [], []),
         ];
 
         $service->expects($this->once())
@@ -153,6 +158,7 @@ class LivroApplicationTest extends TestCase
             'Editora'       => 'Editora X',
             'Edicao'        => 3,
             'AnoPublicacao' => '2024',
+            'Valor'         => 29.90,
             'AutorID'       => [10],
             'AssuntoID'     => [5],
         ];

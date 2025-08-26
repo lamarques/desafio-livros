@@ -30,6 +30,7 @@ class LivroRepository implements LivroRepositoryInterface
             $data->Editora,
             $data->Edicao,
             $data->AnoPublicacao,
+            $data->Valor,
             $data->autores->toArray(),
             $data->assuntos->toArray()
         );
@@ -42,6 +43,7 @@ class LivroRepository implements LivroRepositoryInterface
         $livro->Editora = $livroData->editora;
         $livro->Edicao = $livroData->edicao;
         $livro->AnoPublicacao = $livroData->anoPublicacao;
+        $livro->Valor = $livroData->valor;
         $livro->save();
 
         $livro->autores()->attach($livroData->autores);
@@ -68,6 +70,7 @@ class LivroRepository implements LivroRepositoryInterface
         $livro->Editora = $livroData->editora;
         $livro->Edicao = $livroData->edicao;
         $livro->AnoPublicacao = $livroData->anoPublicacao;
+        $livro->Valor = $livroData->valor;
 
         $livro->save();
 
@@ -100,6 +103,7 @@ class LivroRepository implements LivroRepositoryInterface
                 $livro->Editora,
                 $livro->Edicao,
                 $livro->AnoPublicacao,
+                $livro->Valor,
                 $livro->autores->toArray(),
                 $livro->assuntos->toArray()
             );

@@ -11,6 +11,7 @@ class Livro
         private string $Editora,
         private int $Edicao,
         private string $AnoPublicacao,
+        private float $Valor,
         private array $Autores,
         private array $Assuntos
     )
@@ -50,5 +51,10 @@ class Livro
     public function getAssuntos(): array
     {
         return $this->Assuntos;
+    }
+
+    public function getValor(): float
+    {
+        return $this->Valor;
     }
 }

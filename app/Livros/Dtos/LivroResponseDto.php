@@ -10,6 +10,7 @@ class LivroResponseDto
         public string $Editora,
         public int $Edicao,
         public string $AnoPublicacao,
+        public float $Valor,
         public array $Autores,
         public array $Assuntos
     )

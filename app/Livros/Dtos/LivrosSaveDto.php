@@ -9,6 +9,7 @@ class LivrosSaveDto
         public string $editora,
         public int $edicao,
         public string $anoPublicacao,
+        public float $valor,
         public array $autores,
         public array $assuntos
     ) {

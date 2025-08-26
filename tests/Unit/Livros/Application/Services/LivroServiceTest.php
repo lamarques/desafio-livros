@@ -22,6 +22,7 @@ class LivroServiceTest extends TestCase
             editora: 'Addison-Wesley',
             edicao: 1,
             anoPublicacao: '2003',
+            valor: 17.97,
             autores: [10, 11],
             assuntos: [5, 6]
         );
@@ -55,6 +56,7 @@ class LivroServiceTest extends TestCase
                     Editora: 'Addison-Wesley',
                     Edicao: 1,
                     AnoPublicacao: '2003',
+                    Valor: 17.97,
                     Autores: [10,11],
                     Assuntos: [5,6]
                 )
@@ -68,6 +70,7 @@ class LivroServiceTest extends TestCase
         $this->assertSame('Addison-Wesley', $resp->Editora);
         $this->assertSame(1, $resp->Edicao);
         $this->assertSame('2003', $resp->AnoPublicacao);
+        $this->assertSame(17.97, $resp->Valor);
         $this->assertSame([10,11], $resp->Autores);
         $this->assertSame([5,6], $resp->Assuntos);
     }
@@ -78,8 +81,8 @@ class LivroServiceTest extends TestCase
         $service = new LivroService($repo);
 
         $lista = [
-            new LivroResponseDto(1, 'A', 'X', 1, '2000', [], []),
-            new LivroResponseDto(2, 'B', 'Y', 2, '2001', [9], [4]),
+            new LivroResponseDto(1, 'A', 'X', 1, '2000', 17.97, [], []),
+            new LivroResponseDto(2, 'B', 'Y', 2, '2001',17.97, [9], [4]),
         ];
 
         $repo->expects($this->once())
@@ -125,6 +128,7 @@ class LivroServiceTest extends TestCase
                     Editora: 'Prentice Hall',
                     Edicao: 2,
                     AnoPublicacao: '2017',
+                    Valor: 37.97,
                     Autores: [1,2],
                     Assuntos: [3]
                 )
@@ -138,6 +142,7 @@ class LivroServiceTest extends TestCase
         $this->assertSame('Prentice Hall', $resp->Editora);
         $this->assertSame(2, $resp->Edicao);
         $this->assertSame('2017', $resp->AnoPublicacao);
+        $this->assertSame(37.97, $resp->Valor);
         $this->assertSame([1,2], $resp->Autores);
         $this->assertSame([3], $resp->Assuntos);
     }
@@ -148,7 +153,7 @@ class LivroServiceTest extends TestCase
         $service = new LivroService($repo);
 
         $codl = new LivroRequestDto(123);
-        $save = new LivrosSaveDto('T', 'E', 1, '2000', [], []);
+        $save = new LivrosSaveDto('T', 'E', 1, '2000', 17.97, [], []);
 
         $repo->expects($this->once())
             ->method('getLivro')
@@ -167,13 +172,13 @@ class LivroServiceTest extends TestCase
         $service = new LivroService($repo);
 
         $codl = new LivroRequestDto(77);
-        $save = new LivrosSaveDto('Novo', 'Editora B', 3, '2024', [1], [2]);
+        $save = new LivrosSaveDto('Novo', 'Editora B', 3, '2024',17.97, [1], [2]);
 
         $repo->expects($this->once())
             ->method('getLivro')
             ->with($codl)
             ->willReturn(
-                new LivroEntity(77, 'Antigo', 'Editora A', 1, '2000', [], [])
+                new LivroEntity(77, 'Antigo', 'Editora A', 1, '2000',17.97, [], [])
             );
 
         $repo->expects($this->once())

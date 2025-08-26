@@ -15,7 +15,8 @@ const BookList = () => {
         Edicao: '',
         AnoPublicacao: '',
         AutorID: [],
-        AssuntoID: []
+        AssuntoID: [],
+        Valor: '' // Adicionado campo Valor
     });
     const [authorsOptions, setAuthorsOptions] = useState([]);
     const [subjectsOptions, setSubjectsOptions] = useState([]);
@@ -28,9 +29,22 @@ const BookList = () => {
         fetchSubjects();
     }, []);
 
+    const formatCurrency = (value) => {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(value);
+    };
+
     const fetchBooks = () => {
         api.get('/livro')
-            .then((response) => setBooks(response.data?.data || []))
+            .then((response) => {
+                const formattedBooks = response.data?.data.map((book) => ({
+                    ...book,
+                    Valor: formatCurrency(book.Valor) // Formata o campo Valor
+                }));
+                setBooks(formattedBooks || []);
+            })
             .catch((error) => console.error('Erro ao buscar livros:', error));
     };
 
@@ -61,11 +75,12 @@ const BookList = () => {
     const handleAddBook = (e) => {
         e.preventDefault();
 
-        // Extrai apenas os valores numéricos de AutorID e AssuntoID
+        // Extrai apenas os valores numéricos de AutorID, AssuntoID e converte Valor para float
         const payload = {
             ...newBook,
             AutorID: newBook.AutorID.map((autor) => autor.value),
-            AssuntoID: newBook.AssuntoID.map((assunto) => assunto.value)
+            AssuntoID: newBook.AssuntoID.map((assunto) => assunto.value),
+            Valor: parseFloat(newBook.Valor.replace('R$', '').replace(',', '.')) // Converte para float
         };
 
         api.post('/livro', payload)
@@ -76,7 +91,8 @@ const BookList = () => {
                     Edicao: '',
                     AnoPublicacao: '',
                     AutorID: [],
-                    AssuntoID: []
+                    AssuntoID: [],
+                    Valor: ''
                 });
                 setShowForm(false);
                 fetchBooks();
@@ -92,11 +108,12 @@ const BookList = () => {
             return;
         }
 
-        // Extrai apenas os valores numéricos de AutorID e AssuntoID
+        // Extrai apenas os valores numéricos de AutorID, AssuntoID e converte Valor para float
         const payload = {
             ...newBook,
             AutorID: newBook.AutorID.map((autor) => autor.value),
-            AssuntoID: newBook.AssuntoID.map((assunto) => assunto.value)
+            AssuntoID: newBook.AssuntoID.map((assunto) => assunto.value),
+            Valor: parseFloat(newBook.Valor.replace('R$', '').replace(',', '.')) // Converte para float
         };
 
         api.put(`/livro/${selectedBook.Codl}`, payload)
@@ -107,7 +124,8 @@ const BookList = () => {
                     Edicao: '',
                     AnoPublicacao: '',
                     AutorID: [],
-                    AssuntoID: []
+                    AssuntoID: [],
+                    Valor: ''
                 });
                 setShowForm(false);
                 fetchBooks();
@@ -201,7 +219,8 @@ const BookList = () => {
             Edicao: book.Edicao,
             AnoPublicacao: book.AnoPublicacao,
             AutorID: mappedAuthors,
-            AssuntoID: mappedSubjects
+            AssuntoID: mappedSubjects,
+            Valor: book.Valor // Adicionado campo Valor
         });
 
         setShowForm('edit');
@@ -229,7 +248,8 @@ const BookList = () => {
             Edicao: '',
             AnoPublicacao: '',
             AutorID: [],
-            AssuntoID: []
+            AssuntoID: [],
+            Valor: '' // Adicionado campo Valor
         });
         setShowForm(true);
     };
@@ -297,6 +317,28 @@ const BookList = () => {
                                 value={newBook.AnoPublicacao}
                                 onChange={handleChange}
                                 placeholder="Digite o ano de publicação"
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="Valor" className="form-label">Valor</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="Valor"
+                                name="Valor"
+                                value={newBook.Valor}
+                                onChange={(e) => {
+                                    let rawValue = e.target.value.replace(/[^0-9]/g, ''); // Remove caracteres não numéricos
+                                    while (rawValue.length < 3) {
+                                        rawValue = '0' + rawValue; // Garante pelo menos 3 dígitos
+                                    }
+                                    const integerPart = rawValue.slice(0, -2); // Parte inteira
+                                    const decimalPart = rawValue.slice(-2); // Parte decimal
+                                    const formattedValue = `R$ ${parseInt(integerPart, 10).toLocaleString('pt-BR')},${decimalPart}`;
+                                    setNewBook((prev) => ({ ...prev, Valor: formattedValue }));
+                                }}
+                                placeholder="Digite o valor"
+                                required
                             />
                         </div>
                         <div className="mb-3">
@@ -390,6 +432,28 @@ const BookList = () => {
                             />
                         </div>
                         <div className="mb-3">
+                            <label htmlFor="Valor" className="form-label">Valor</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="Valor"
+                                name="Valor"
+                                value={newBook.Valor}
+                                onChange={(e) => {
+                                    let rawValue = e.target.value.replace(/[^0-9]/g, ''); // Remove caracteres não numéricos
+                                    while (rawValue.length < 3) {
+                                        rawValue = '0' + rawValue; // Garante pelo menos 3 dígitos
+                                    }
+                                    const integerPart = rawValue.slice(0, -2); // Parte inteira
+                                    const decimalPart = rawValue.slice(-2); // Parte decimal
+                                    const formattedValue = `R$ ${parseInt(integerPart, 10).toLocaleString('pt-BR')},${decimalPart}`;
+                                    setNewBook((prev) => ({ ...prev, Valor: formattedValue }));
+                                }}
+                                placeholder="Digite o valor"
+                                required
+                            />
+                        </div>
+                        <div className="mb-3">
                             <label htmlFor="AutorID" className="form-label">Autores</label>
                             <Creatable
                                 isMulti
@@ -432,6 +496,7 @@ const BookList = () => {
                     <li key={book.Codl} className="list-group-item d-flex justify-content-between align-items-center">
                         <span>{book.Titulo}</span>
                         <div>
+                            <strong className="me-3">{book.Valor}</strong> {/* Exibe o valor formatado */}
                             <button
                                 className="btn btn-sm btn-info me-2"
                                 onClick={() => handleViewBookDetails(book.Codl)}

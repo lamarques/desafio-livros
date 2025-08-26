@@ -47,6 +47,7 @@ class LivroResponseDtoTest extends TestCase
             'TechBooks',
             2,
             '2020',
+            17.97,
             [],
             []
         );
@@ -56,41 +57,43 @@ class LivroResponseDtoTest extends TestCase
         $this->assertSame('TechBooks', $this->readValue($dto, 'Editora'));
         $this->assertSame(2, $this->readValue($dto, 'Edicao'));
         $this->assertSame('2020', $this->readValue($dto, 'AnoPublicacao'));
+        $this->assertSame(17.97, $this->readValue($dto, 'Valor'));
 
         $this->assertIsInt($this->readValue($dto, 'Codl'));
         $this->assertIsString($this->readValue($dto, 'Titulo'));
         $this->assertIsString($this->readValue($dto, 'Editora'));
         $this->assertIsInt($this->readValue($dto, 'Edicao'));
         $this->assertIsString($this->readValue($dto, 'AnoPublicacao'));
+        $this->assertIsFloat($this->readValue($dto, 'Valor'));
     }
 
     public function testLancaTypeErrorQuandoCodlNaoEhInteiro(): void
     {
         $this->expectException(\TypeError::class);
-        new LivroResponseDto([], 'Titulo', 'Editora', 1, '2020', [], []);
+        new LivroResponseDto([], 'Titulo', 'Editora', 1, '2020',17.97, [], []);
     }
 
     public function testLancaTypeErrorQuandoTituloNaoEhString(): void
     {
         $this->expectException(\TypeError::class);
-        new LivroResponseDto(1, [], 'Editora', 1, '2020', [], []);
+        new LivroResponseDto(1, [], 'Editora', 1, '2020',17.97, [], []);
     }
 
     public function testLancaTypeErrorQuandoEditoraNaoEhString(): void
     {
         $this->expectException(\TypeError::class);
-        new LivroResponseDto(1, 'Titulo', [], 1, '2020', [], []);
+        new LivroResponseDto(1, 'Titulo', [], 1, '2020',17.97, [], []);
     }
 
     public function testLancaTypeErrorQuandoEdicaoNaoEhInteiro(): void
     {
         $this->expectException(\TypeError::class);
-        new LivroResponseDto(1, 'Titulo', 'Editora', [], '2020', [], []);
+        new LivroResponseDto(1, 'Titulo', 'Editora', [], '2020',17.97, [], []);
     }
 
     public function testLancaTypeErrorQuandoAnoPublicacaoNaoEhString(): void
     {
         $this->expectException(\TypeError::class);
-        new LivroResponseDto(1, 'Titulo', 'Editora', 1, [], [], []);
+        new LivroResponseDto(1, 'Titulo', 'Editora', 1, [],[], [], []);
     }
 }
