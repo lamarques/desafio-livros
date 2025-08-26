@@ -29,7 +29,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . /app
 
 # Expor portas
-EXPOSE 9000
+EXPOSE 8000 9000
 
 # Inicio do servidor PHP-FPM
 CMD ["php-fpm"]
