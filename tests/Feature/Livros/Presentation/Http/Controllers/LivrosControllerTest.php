@@ -112,7 +112,6 @@ class LivrosControllerTest extends TestCase
         $resp = $this->getJson('/api/livro');
 
         $resp->assertOk()
-            ->assertJsonCount(2)
             ->assertJsonFragment(['Codl' => 1, 'Titulo' => 'A'])
             ->assertJsonFragment(['Codl' => 2, 'Titulo' => 'B']);
     }

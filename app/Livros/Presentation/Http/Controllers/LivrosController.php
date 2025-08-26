@@ -26,7 +26,7 @@ class LivrosController extends Controller
     public function list(): JsonResponse
     {
         return response()->json(
-            $this->livroApplication->listLivros(),
+            ['data' => $this->livroApplication->listLivros()],
             200
         );
     }

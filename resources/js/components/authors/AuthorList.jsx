@@ -1,13 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '../../api';
 
 const AuthorList = () => {
+    const [authors, setAuthors] = useState([]);
+
+    useEffect(() => {
+        buscarAutores();
+    }, []);
+
+    const buscarAutores = () => {
+        api.get('/autor')
+            .then((response) => setAuthors(response.data.data))
+            .catch((error) => console.error('Erro ao buscar autores:', error));
+    };
+
     return (
         <div className="container mt-4">
-            <h2 className="mb-4">Authors</h2>
+            <h2 className="mb-4">Autores</h2>
             <ul className="list-group">
-                <li className="list-group-item">Author 1</li>
-                <li className="list-group-item">Author 2</li>
-                <li className="list-group-item">Author 3</li>
+                {authors.map((author) => (
+                    <li key={author.CodAu} className="list-group-item">
+                        {author.Nome}
+                    </li>
+                ))}
             </ul>
         </div>
     );
