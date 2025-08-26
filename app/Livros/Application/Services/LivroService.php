@@ -26,6 +26,7 @@ class LivroService
             $data->getEditora(),
             $data->getEdicao(),
             $data->getAnoPublicacao(),
+            $data->getValor(),
             $data->getAutores(),
             $data->getAssuntos()
         );
@@ -48,6 +49,7 @@ class LivroService
             $data->getEditora(),
             $data->getEdicao(),
             $data->getAnoPublicacao(),
+            $data->getValor(),
             $data->getAutores(),
             $data->getAssuntos()
         );

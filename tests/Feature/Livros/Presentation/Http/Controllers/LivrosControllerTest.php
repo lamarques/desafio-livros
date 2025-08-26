@@ -31,6 +31,7 @@ class LivrosControllerTest extends TestCase
             'Editora'       => 'Addison-Wesley',
             'Edicao'        => 1,
             'AnoPublicacao' => '2003',
+            'Valor'         => 17.97,
             'AutorID'       => $this->autores,
             'AssuntoID'     => $this->assuntos,
         ];
@@ -53,6 +54,7 @@ class LivrosControllerTest extends TestCase
             Editora: $input['Editora'],
             Edicao: $input['Edicao'],
             AnoPublicacao: $input['AnoPublicacao'],
+            Valor: 17.97,
             Autores: $input['AutorID'],
             Assuntos: $input['AssuntoID']
         );
@@ -66,6 +68,7 @@ class LivrosControllerTest extends TestCase
                         && $arg->editora === $input['Editora']
                         && $arg->edicao === $input['Edicao']
                         && $arg->anoPublicacao === $input['AnoPublicacao']
+                        && $arg->valor === $input['Valor']
                         && $arg->autores === $input['AutorID']
                         && $arg->assuntos === $input['AssuntoID'];
                 }))
@@ -81,6 +84,7 @@ class LivrosControllerTest extends TestCase
             ->assertJsonPath('data.Editora', 'Addison-Wesley')
             ->assertJsonPath('data.Edicao', 1)
             ->assertJsonPath('data.AnoPublicacao', '2003')
+            ->assertJsonPath('data.Valor', 17.97)
             ->assertJsonPath('data.Autores', $this->autores)
             ->assertJsonPath('data.Assuntos', $this->assuntos);
     }
@@ -98,8 +102,8 @@ class LivrosControllerTest extends TestCase
     public function testListRetorna200ComArray(): void
     {
         $lista = [
-            new LivroResponseDto(1, 'A', 'X', 1, '2001', [10], [5]),
-            new LivroResponseDto(2, 'B', 'Y', 2, '2002', [11], [6]),
+            new LivroResponseDto(1, 'A', 'X', 1, '2001', 10.97, [10], [5]),
+            new LivroResponseDto(2, 'B', 'Y', 2, '2002', 10.97, [11], [6]),
         ];
 
         $this->bindAppWithServiceMock(function (LivroService $service) use ($lista) {
@@ -118,7 +122,7 @@ class LivrosControllerTest extends TestCase
 
     public function testShowRetorna200ComPayload(): void
     {
-        $dto = new LivroResponseDto(7, 'Clean Code', 'PH', 1, '2008', [10], [5]);
+        $dto = new LivroResponseDto(7, 'Clean Code', 'PH', 1, '2008', 10.97, [10], [5]);
 
         $this->bindAppWithServiceMock(function (LivroService $service) use ($dto) {
             $service->expects($this->once())
@@ -163,6 +167,7 @@ class LivrosControllerTest extends TestCase
                             && $arg->editora === $input['Editora']
                             && $arg->edicao === $input['Edicao']
                             && $arg->anoPublicacao === $input['AnoPublicacao']
+                            && $arg->valor === $input['Valor']
                             && $arg->autores === $input['AutorID']
                             && $arg->assuntos === $input['AssuntoID'];
                     })

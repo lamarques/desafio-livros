@@ -24,14 +24,16 @@ class LivroTest extends TestCase
         $editora = $this->faker->company();
         $edicao = $this->faker->numberBetween(1, 50);
         $ano    = (string) $this->faker->numberBetween(1900, (int) date('Y'));
+        $valor  = $this->faker->randomFloat(2, 10, 500);
 
-        $livro = new Livro($codl, $titulo, $editora, $edicao, $ano, [], []);
+        $livro = new Livro($codl, $titulo, $editora, $edicao, $ano, $valor, [], []);
 
         $this->assertSame($codl,   $livro->getCodl());
         $this->assertSame($titulo, $livro->getTitulo());
         $this->assertSame($editora,$livro->getEditora());
         $this->assertSame($edicao, $livro->getEdicao());
         $this->assertSame($ano,    $livro->getAnoPublicacao());
+        $this->assertSame($valor,  $livro->getValor());
         $this->assertIsArray($livro->getAutores());
         $this->assertIsArray($livro->getAssuntos());
     }

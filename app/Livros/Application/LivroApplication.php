@@ -34,6 +34,7 @@ readonly class LivroApplication
             $livroData['Editora'],
             $livroData['Edicao'],
             $livroData['AnoPublicacao'],
+            $livroData['Valor'],
             $livroData['AutorID'],
             $livroData['AssuntoID']
         );
@@ -53,6 +54,7 @@ readonly class LivroApplication
             $livroData['Editora'],
             $livroData['Edicao'],
             $livroData['AnoPublicacao'],
+            $livroData['Valor'],
             $livroData['AutorID'],
             $livroData['AssuntoID']
         );

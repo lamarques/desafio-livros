@@ -37,6 +37,7 @@ class LivroRepositoryTest extends TestCase
         $livro->Editora       = $attrs['Editora']       ?? 'TechBooks';
         $livro->Edicao        = $attrs['Edicao']        ?? 1;
         $livro->AnoPublicacao = $attrs['AnoPublicacao'] ?? '2020';
+        $livro->Valor         = $attrs['Valor']         ?? 59.90;
         $livro->save();
 
         return $livro;
@@ -49,6 +50,7 @@ class LivroRepositoryTest extends TestCase
             'Editora' => 'Prentice Hall',
             'Edicao' => 2,
             'AnoPublicacao' => '2017',
+            'Valor' => 49.90,
         ]);
 
         $dtoReq = new LivroRequestDto($salvo->Codl);
@@ -60,6 +62,7 @@ class LivroRepositoryTest extends TestCase
         $this->assertSame('Prentice Hall', $entity->getEditora());
         $this->assertSame(2, $entity->getEdicao());
         $this->assertSame('2017', $entity->getAnoPublicacao());
+        $this->assertSame(49.90, $entity->getValor());
     }
 
     public function testGetLivroRetornaNullQuandoNaoEncontrado(): void
@@ -75,6 +78,7 @@ class LivroRepositoryTest extends TestCase
             editora: 'Addison-Wesley',
             edicao: 1,
             anoPublicacao: '2003',
+            valor: 97.00,
             autores: [],
             assuntos: []
         );
@@ -87,13 +91,14 @@ class LivroRepositoryTest extends TestCase
             'Editora' => 'Addison-Wesley',
             'Edicao' => 1,
             'AnoPublicacao' => '2003',
+            'Valor' => 97.00,
         ]);
     }
 
     public function testUpdateLivroRetornaFalseSeNaoEncontrado(): void
     {
         $req = new LivroRequestDto(123456);
-        $save = new LivrosSaveDto('Novo Título', 'Nova Editora', 2, '2024', [], []);
+        $save = new LivrosSaveDto('Novo Título', 'Nova Editora', 2, '2024',17.97, [], []);
 
         $this->assertFalse($this->repo->updateLivro($req, $save));
     }
@@ -105,10 +110,11 @@ class LivroRepositoryTest extends TestCase
             'Editora' => 'Editora A',
             'Edicao' => 1,
             'AnoPublicacao' => '2000',
+            'Valor' => 29.90,
         ]);
 
         $req = new LivroRequestDto($salvo->Codl);
-        $save = new LivrosSaveDto('Novo', 'Editora B', 3, '2024', [], []);
+        $save = new LivrosSaveDto('Novo', 'Editora B', 3, '2024',29.90, [], []);
 
         $ok = $this->repo->updateLivro($req, $save);
         $this->assertTrue($ok);
@@ -119,6 +125,7 @@ class LivroRepositoryTest extends TestCase
             'Editora' => 'Editora B',
             'Edicao' => 3,
             'AnoPublicacao' => '2024',
+            'Valor' => 29.90,
         ]);
     }
 
@@ -146,12 +153,14 @@ class LivroRepositoryTest extends TestCase
             'Editora' => 'Editora A',
             'Edicao' => 1,
             'AnoPublicacao' => '2001',
+            'Valor' => 19.90,
         ]);
         $b = $this->criarLivro([
             'Titulo' => 'Livro B',
             'Editora' => 'Editora B',
             'Edicao' => 2,
             'AnoPublicacao' => '2002',
+            'Valor' => 29.90,
         ]);
 
         $lista = $this->repo->listLivros();
@@ -170,12 +179,14 @@ class LivroRepositoryTest extends TestCase
         $this->assertSame('Editora A', $map[$a->Codl]->Editora);
         $this->assertSame(1, $map[$a->Codl]->Edicao);
         $this->assertSame('2001', $map[$a->Codl]->AnoPublicacao);
+        $this->assertSame(19.90, $map[$a->Codl]->Valor);
 
         $this->assertArrayHasKey($b->Codl, $map);
         $this->assertSame('Livro B', $map[$b->Codl]->Titulo);
         $this->assertSame('Editora B', $map[$b->Codl]->Editora);
         $this->assertSame(2, $map[$b->Codl]->Edicao);
         $this->assertSame('2002', $map[$b->Codl]->AnoPublicacao);
+        $this->assertSame(29.90, $map[$b->Codl]->Valor);
     }
 
     public function testGetLastInsertedIdRetornaIdAposSalvar(): void
@@ -187,6 +198,7 @@ class LivroRepositoryTest extends TestCase
             editora: 'Addison-Wesley',
             edicao: 1,
             anoPublicacao: '2003',
+            valor: 17.97,
             autores: [],
             assuntos: []
         );
@@ -205,6 +217,7 @@ class LivroRepositoryTest extends TestCase
             'Editora'       => 'Addison-Wesley',
             'Edicao'        => 1,
             'AnoPublicacao' => '2003',
+            'Valor'         => 17.97,
         ]);
     }
 

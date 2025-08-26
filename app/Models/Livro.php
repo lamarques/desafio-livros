@@ -21,9 +21,11 @@ class Livro extends Model
         'Editora',
         'Edicao',
         'AnoPublicacao',
+        'Valor',
     ];
     protected $casts = [
         'Codl' => 'integer',
+        'Valor' => 'float',
     ];
 
     public function autores()
