@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LivroRelatorioController;
 use App\Livros\Presentation\Http\Controllers\AssuntoControler;
 use App\Livros\Presentation\Http\Controllers\AutorController;
 use App\Livros\Presentation\Http\Controllers\LivrosController;
@@ -35,3 +36,6 @@ Route::group(['prefix' => 'livro'], function () {
     Route::delete('/{id}', [LivrosController::class, 'delete'])
         ->name('api.livro.delete');
 });
+
+Route::get('/relatorios/livros', [LivroRelatorioController::class, 'index']);
+Route::get('/relatorios/livros.csv', [LivroRelatorioController::class, 'exportCsv']);
